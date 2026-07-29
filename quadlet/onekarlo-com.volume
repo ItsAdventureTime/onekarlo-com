@@ -1,0 +1,6 @@
+# Quadlet Volume snippet for onekarlo.com
+# Saved under ~/.config/containers/systemd/onekarlo-com/onekarlo-com.volume
+
+[Volume]
+User=jk
+Group=jk
