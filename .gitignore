@@ -23,6 +23,9 @@ yarn-error.log*
 *.md
 **/*.md
 
-# Track durable Serena project memories despite the global Markdown ignore rule
+# Public GitHub Documentation Exemption
+!README.md
+
+# Track durable Serena project memories
 !.serena/memories/
 !.serena/memories/*.md
