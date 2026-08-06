@@ -19,12 +19,14 @@ yarn-error.log*
 .env
 .env.*
 
-# Privacy: Ignore ALL markdown files across root and all subdirectories
+# Privacy: Ignore ALL markdown files across root and all subdirectories by default
 *.md
 **/*.md
 
-# Public GitHub Documentation Exemption
+# Whitelist Public GitHub Repository Documentation
 !README.md
+!ARCHITECTURE.md
+!CONTRIBUTING.md
 
 # Track durable Serena project memories
 !.serena/memories/
