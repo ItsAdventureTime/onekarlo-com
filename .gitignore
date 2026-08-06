@@ -18,3 +18,7 @@ yarn-debug.log*
 yarn-error.log*
 .env
 .env.*
+
+# Privacy: Ignore ALL markdown files across root and all subdirectories
+*.md
+**/*.md
