@@ -22,3 +22,7 @@ yarn-error.log*
 # Privacy: Ignore ALL markdown files across root and all subdirectories
 *.md
 **/*.md
+
+# Track durable Serena project memories despite the global Markdown ignore rule
+!.serena/memories/
+!.serena/memories/*.md
