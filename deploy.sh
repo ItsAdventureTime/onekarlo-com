@@ -2,13 +2,13 @@
 set -euo pipefail
 
 # ==============================================================================
-# ONE-LINE COPY & PASTE DEPLOYMENT COMMANDS (LOCAL MAC TO VPS)
+# ONE-LINE COPY & PASTE DEPLOYMENT COMMANDS (LOCAL MAC TO VPS: 216.75.75.136)
 # ==============================================================================
-# Fast Local Build & Sync:
-#   npm run build && rsync -avz --delete --exclude='.DS_Store' --exclude='._*' --exclude='.Spotlight-V100' --exclude='.Trashes' "/Users/jk.deguzman/dev/onekarlo-com/dist/" gatewaysentry:/home/jk/onekarlo-com/
+# Podman Transient Container Build & Direct Sync to VPS (Recommended):
+#   podman run --rm -e NPM_CONFIG_UPDATE_NOTIFIER=false -v "/Users/jk.deguzman/dev/onekarlo-com:/app:z" -w /app docker.io/library/node:alpine sh -c "npm install --no-audit --no-fund --no-notice --quiet && npm run build" && rsync -avz -e "ssh -p 22" --delete --exclude='.DS_Store' --exclude='._*' --exclude='.Spotlight-V100' --exclude='.Trashes' "/Users/jk.deguzman/dev/onekarlo-com/dist/" jk@216.75.75.136:/home/jk/onekarlo-com/
 #
-# Podman Transient Container Build & Sync (Silent Build):
-#   podman run --rm -e NPM_CONFIG_UPDATE_NOTIFIER=false -v "/Users/jk.deguzman/dev/onekarlo-com:/app:z" -w /app docker.io/library/node:alpine sh -c "npm install --no-audit --no-fund --no-notice --quiet && npm run build" && rsync -avz --delete --exclude='.DS_Store' --exclude='._*' --exclude='.Spotlight-V100' --exclude='.Trashes' "/Users/jk.deguzman/dev/onekarlo-com/dist/" gatewaysentry:/home/jk/onekarlo-com/
+# Fast Local Build & Direct Sync to VPS:
+#   npm run build && rsync -avz -e "ssh -p 22" --delete --exclude='.DS_Store' --exclude='._*' --exclude='.Spotlight-V100' --exclude='.Trashes' "/Users/jk.deguzman/dev/onekarlo-com/dist/" jk@216.75.75.136:/home/jk/onekarlo-com/
 # ==============================================================================
 
 echo "===================================================="
