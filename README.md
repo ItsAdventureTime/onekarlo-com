@@ -67,11 +67,14 @@ npm run dev
 Open `http://localhost:3000` in your browser. Live reloading is enabled out of the box.
 
 ### 4. Build for production
-```bash
-# Standard local build
-npm run build
+### 3. Production & Transient Container Build
+All build compilations run strictly inside transient `node:alpine` containers via local macOS Podman (`podman machine start`). Containers automatically self-destruct (`--rm`) upon completion to prevent disk clutter and leftover build caches:
 
-# Containerized build using a transient Podman container
+```bash
+# Ensure Podman machine is running
+podman machine start
+
+# Run transient containerized build (--rm self-destructs container on exit)
 npm run build:podman
 ```
 The output compiles cleanly into `dist/`.
