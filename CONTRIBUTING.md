@@ -54,15 +54,21 @@ node scratch/test_audit.js
 
 ---
 
-## 🔐 Commit Signing
+## 🔐 Commit Signing & GitHub CLI Integration
 
-All commits in this repository require SSH signature verification. If you are submitting commits, please ensure your Git client is configured to sign commits using an SSH key or GPG key:
+All commits in this repository require 1Password SSH signature verification and remote management via **GitHub CLI (`gh`)**:
 
 ```bash
-# Example SSH commit signing configuration
+# Verify GitHub CLI authentication status
+gh auth status
+
+# Configure 1Password SSH commit signing
 git config --global gpg.format ssh
 git config --global user.signingkey "ssh-ed25519 YOUR_PUBLIC_KEY"
 git config --global commit.gpgsign true
+
+# View repository status online via GitHub CLI
+gh repo view ItsAdventureTime/onekarlo-com
 ```
 
 ---
