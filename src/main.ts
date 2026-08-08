@@ -267,7 +267,7 @@ function initCursorGlow() {
 
   window.addEventListener('mousemove', (e) => {
     glow.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
-  });
+  }, { passive: true });
 }
 
 /* --------------------------------------------------------------------------
