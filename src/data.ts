@@ -23,39 +23,39 @@ export const PROFILE_DATA = {
   title: 'Full-Stack Product Engineer & Solutions Consultant',
   location: 'Marikina City, Philippines (Remote / Worldwide)',
   linkedin: 'https://www.linkedin.com/in/juan-karlo-de-guzman-51b79517/',
-  bio: `I design, build, deploy, and operate purpose-built business applications and AI infrastructure. As CTO across multiple active software projects (PIMASCOR under BRIDGE, Accustandard, Le Mans, and Borgs Technology), I lead full-stack engineering, rootless Podman Quadlet deployments on Fedora CoreOS, vLLM inference pipelines with Bifrost Go routing, and operational systems architecture.`
+  bio: `I build, deploy, and support custom web applications and AI infrastructure. Over the past several years, I have worked across the full delivery cycle: talking with clients to pin down their real workflows, architecting backends and databases, setting up Linux servers, and keeping systems running reliably after launch. My day-to-day work includes rootless Podman Quadlets on Fedora CoreOS, self-hosted AI model inference, and operational systems engineering.`
 };
 
 export const PHILOSOPHY_STEPS: PhilosophyStep[] = [
   {
     stepNum: 1,
     title: 'Deploy',
-    desc: 'Spin up a clean, reproducible environment using rootless Podman Quadlet container files.'
+    desc: 'Spin up clean, reproducible environments using rootless Podman Quadlet container files.'
   },
   {
     stepNum: 2,
     title: 'Test Boundaries',
-    desc: 'Run edge-case stress tests, mock invalid user inputs, and check security boundaries under load.'
+    desc: 'Run edge-case stress tests, mock invalid inputs, and verify security rules under load.'
   },
   {
     stepNum: 3,
     title: 'Inspect Logs',
-    desc: 'Read exact journalctl logs, container tracebacks, and raw HTTP headers to see what really happened.'
+    desc: 'Read systemd logs, container tracebacks, and raw HTTP headers to see what actually happened.'
   },
   {
     stepNum: 4,
     title: 'Isolate Root Cause',
-    desc: 'Identify the exact failing component without guessing or making quick symptom patches.'
+    desc: 'Pinpoint the failing component directly instead of guessing or applying temporary workarounds.'
   },
   {
     stepNum: 5,
     title: 'Fix & Harden',
-    desc: 'Resolve the underlying bug, update system configurations, and enforce SELinux & CSP rules.'
+    desc: 'Fix the root issue, update server rules, and enforce SELinux access policies.'
   },
   {
     stepNum: 6,
     title: 'Document & Verify',
-    desc: 'Record the exact fix, run automated tests, and document the solution so it stays fixed.'
+    desc: 'Write clear operational notes, run automated checks, and make sure the solution stays solid.'
   }
 ];
 
@@ -120,10 +120,10 @@ export interface ProjectItem {
 export const PROJECTS_DATA: ProjectItem[] = [
   {
     id: 'p1',
-    title: 'Logistics & Operational Audit Platform (PIMASCOR)',
+    title: 'Enterprise Logistics & Financial Control Platform',
     category: 'biz',
     categoryLabel: 'Product Engineering',
-    description: 'Serving as CTO under BRIDGE, designed and deployed an enterprise logistics and financial application to replace error-prone spreadsheet workflows with strict approval chains, automated budget liquidations, and immutable audit logs. Built with FastAPI, React, PostgreSQL, and Caddy running inside isolated rootless Podman containers.',
+    description: 'Designed and deployed an operational financial system to replace manual spreadsheet workflows with explicit approval chains, automated budget liquidations, and immutable database audit logs. Built with FastAPI, React, PostgreSQL, and Caddy running inside isolated rootless Podman containers.',
     tags: ['FastAPI', 'React', 'TypeScript', 'PostgreSQL', 'Rootless Podman', 'Caddy Server', 'REST API', 'Audit Logs'],
     metrics: [
       '100% Financial Audit Traceability',
@@ -133,23 +133,23 @@ export const PROJECTS_DATA: ProjectItem[] = [
   },
   {
     id: 'p2',
-    title: 'Medical Supply Chain Platform (Accustandard)',
+    title: 'Medical Supply Chain & Inventory Platform',
     category: 'biz',
     categoryLabel: 'Product Engineering',
-    description: 'Serving as CTO, leading product architecture and engineering for an operational medical supply chain application. Streamlines approved supplier setup, purchasing, receiving inspections, lot/serial inventory controls, quotation workflows, sales orders, and delivery tracking.',
+    description: 'Engineered an operational inventory application for medical supplies and equipment. Systematizes approved supplier setup, purchasing, receiving inspections, lot and serial number tracking, quotations, sales orders, and delivery dispatching.',
     tags: ['Product Architecture', 'React', 'TypeScript', 'Inventory Control', 'Lot & Serial Traceability', 'Supplies Management'],
     metrics: [
       'End-to-End Inventory & Lot Control',
       'Quotations to Delivery Traceability',
-      'Purpose-Built Medical Supply SOPs'
+      'Purpose-Built Supply SOPs'
     ]
   },
   {
     id: 'p3',
-    title: 'Automotive Repair & Service Application (Le Mans)',
+    title: 'Automotive Repair & Workshop Operations System',
     category: 'biz',
     categoryLabel: 'Product Engineering',
-    description: 'Serving as CTO, engineered a purpose-built workshop management application for automotive repair and maintenance workflows. Features customer intake, vehicle inspections, instant estimates, job tracking, technician assignments, supplier parts costs, and quality release checks.',
+    description: 'Built a custom workshop management web application for automotive service centers. Features customer intake, vehicle inspections, instant estimates, job tracking, technician assignments, parts cost logging, and quality release checks.',
     tags: ['Workshop Operations', 'React', 'TypeScript', 'Vehicle Intake', 'Work Orders', 'Parts Costing'],
     metrics: [
       'Vehicle Intake to Release Workflow',

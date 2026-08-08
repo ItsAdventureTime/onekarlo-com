@@ -234,9 +234,9 @@ ${PROFILE_DATA.bio}`);
 
       case 'skills':
       case 'skills --all':
-        this.appendStreamLine(`<span style="color: var(--accent-cyan);">[FULL-STACK PRODUCT ENGINEERING & CTO]</span>
+        this.appendStreamLine(`<span style="color: var(--accent-cyan);">[FULL-STACK PRODUCT ENGINEERING & CONSULTING]</span>
   Headline Role:      Full-Stack Product Engineer & Solutions Consultant
-  Active Applications: PIMASCOR (BRIDGE logistics/finance), Accustandard (medical), Le Mans (auto repair), Borgs Technology
+  Active Systems:     Logistics Audit & Financial Control, Medical Supply Chain, Workshop Management, Custom Platforms
   Web Stack:          React, TypeScript, Vite, FastAPI, PostgreSQL, REST APIs
 
 <span style="color: var(--accent-indigo);">[AI INFRASTRUCTURE & SERVING]</span>
