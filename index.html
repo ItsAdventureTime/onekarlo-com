@@ -48,9 +48,9 @@
       <div class="nav-menu-container">
         <ul class="nav-menu" id="nav-menu">
           <li><a href="#hero" class="nav-link active">Home</a></li>
-          <li><a href="#philosophy" class="nav-link">Philosophy</a></li>
-          <li><a href="#topology" class="nav-link">Topology</a></li>
           <li><a href="#projects" class="nav-link">Projects</a></li>
+          <li><a href="#topology" class="nav-link">Topology</a></li>
+          <li><a href="#philosophy" class="nav-link">Philosophy</a></li>
           <!-- Dynamic Sliding Active Indicator Line -->
           <div id="nav-slider" class="nav-slider-indicator"></div>
         </ul>
@@ -113,18 +113,21 @@
       </div>
     </section>
 
-    <!-- Operating Philosophy Pipeline -->
-    <section id="philosophy" class="section reveal-on-scroll">
+    <!-- Filterable Case Studies & Projects (Proof of Results First) -->
+    <section id="projects" class="section reveal-on-scroll">
       <div class="container">
         <div class="section-header">
-          <span class="section-tag">Methodology</span>
-          <h2 class="section-title">Engineering Philosophy</h2>
+          <span class="section-tag">Projects</span>
+          <h2 class="section-title">Active Projects & Systems</h2>
           <p class="section-description">
-            Designing resilient production systems that perform under load through systematic log inspection, edge-case testing, and root-cause isolation.
+            A look at current work across AI infrastructure, financial control applications, platform operations, startup SOPs, and language education.
           </p>
         </div>
-        <div id="philosophy-pipeline" class="philosophy-pipeline">
-          <!-- Rendered dynamically by src/main.ts -->
+        <div id="projects-filter-bar" class="projects-filter-bar">
+          <!-- Filter buttons rendered by src/projects.ts -->
+        </div>
+        <div id="projects-grid" class="projects-grid">
+          <!-- Project cards rendered by src/projects.ts -->
         </div>
       </div>
     </section>
@@ -159,21 +162,18 @@
       </div>
     </section>
 
-    <!-- Filterable Case Studies & Projects -->
-    <section id="projects" class="section reveal-on-scroll">
+    <!-- Operating Philosophy Pipeline -->
+    <section id="philosophy" class="section reveal-on-scroll">
       <div class="container">
         <div class="section-header">
-          <span class="section-tag">Projects</span>
-          <h2 class="section-title">Active Projects & Systems</h2>
+          <span class="section-tag">Methodology</span>
+          <h2 class="section-title">Engineering Philosophy</h2>
           <p class="section-description">
-            A look at current work across AI infrastructure, financial control applications, platform operations, startup SOPs, and language education.
+            Designing resilient production systems that perform under load through systematic log inspection, edge-case testing, and root-cause isolation.
           </p>
         </div>
-        <div id="projects-filter-bar" class="projects-filter-bar">
-          <!-- Filter buttons rendered by src/projects.ts -->
-        </div>
-        <div id="projects-grid" class="projects-grid">
-          <!-- Project cards rendered by src/projects.ts -->
+        <div id="philosophy-pipeline" class="philosophy-pipeline">
+          <!-- Rendered dynamically by src/main.ts -->
         </div>
       </div>
     </section>
