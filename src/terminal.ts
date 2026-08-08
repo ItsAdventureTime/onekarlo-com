@@ -234,27 +234,27 @@ ${PROFILE_DATA.bio}`);
 
       case 'skills':
       case 'skills --all':
-        this.appendStreamLine(`<span style="color: var(--accent-cyan);">[AI INFRASTRUCTURE & SERVING]</span>
+        this.appendStreamLine(`<span style="color: var(--accent-cyan);">[FULL-STACK PRODUCT ENGINEERING & CTO]</span>
+  Headline Role:      Full-Stack Product Engineer & Solutions Consultant
+  Active Applications: PIMASCOR (BRIDGE logistics/finance), Accustandard (medical), Le Mans (auto repair), Borgs Technology
+  Web Stack:          React, TypeScript, Vite, FastAPI, PostgreSQL, REST APIs
+
+<span style="color: var(--accent-indigo);">[AI INFRASTRUCTURE & SERVING]</span>
   Inference Engine:   PyTorch & vLLM (High-Throughput Model Serving)
   Proxy Router:       Bifrost (Lightweight Go API Router)
   Frontend UI:        big-AGI (Simultaneous Multi-Model Streaming)
   Cloud GPUs:         RunPod & Hyperstack (Ubuntu Instance Nodes)
   Model Sources:      OpenRouter API & Hugging Face Repository
 
-<span style="color: var(--accent-indigo);">[LINUX PLATFORM & DEVOPS]</span>
+<span style="color: var(--accent-emerald);">[LINUX PLATFORM & DEVOPS]</span>
   Host OS:            Fedora CoreOS (Immutable Systemd Distribution)
   Container Runtime:  Rootless Podman Engine (Systemd Quadlet Units)
   Web Server & Edge:  Caddy Web Server & Bunny.net Anycast CDN
   Security Baseline:  SELinux Enforcing Mode & systemd lingering
 
-<span style="color: var(--accent-violet);">[SYSTEMS & OPERATIONS]</span>
-  Startup Operations: Systems Support, SOP Design & Process Flowcharts
-  Workspace Systems:  Airtable & Notion Enterprise Architectures
-  Audit Software:     Enterprise Financial Audit & Liquidation Platform
-
 <span style="color: var(--accent-amber);">[ESL & OPERATIONS]</span>
-  Operations:     ESL Operations & Program Director for Online English Education Platforms
-  Certifications: IELTS, TOEFL, LanguageCert ESOL & Cambridge BEC`);
+  Operations:         ESL Operations & Program Director for Online English Education Platforms
+  Certifications:     IELTS, TOEFL, LanguageCert ESOL & Cambridge BEC`);
         break;
 
       case 'architecture':

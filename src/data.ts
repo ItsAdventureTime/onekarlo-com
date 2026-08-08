@@ -20,10 +20,10 @@ export interface PhilosophyStep {
 
 export const PROFILE_DATA = {
   name: 'Juan Karlo "JK" de Guzman',
-  title: 'Remote Operations Manager, Tech Infrastructure Specialist, & Systems Consultant',
-  location: 'Philippines (Remote / Worldwide)',
+  title: 'Full-Stack Product Engineer & Solutions Consultant',
+  location: 'Marikina City, Philippines (Remote / Worldwide)',
   linkedin: 'https://www.linkedin.com/in/juan-karlo-de-guzman-51b79517/',
-  bio: `I design and run production Linux server architectures, high-throughput AI model serving pipelines, and financial control platforms. My daily stack includes rootless Podman Quadlets on Fedora CoreOS, vLLM with Bifrost Go proxy routing, PyTorch on Ubuntu cloud GPUs (RunPod & Hyperstack), and big-AGI. I focus on clean system architectures, strict access controls, and high-reliability operations.`
+  bio: `I design, build, deploy, and operate purpose-built business applications and AI infrastructure. As CTO across multiple active software projects (PIMASCOR under BRIDGE, Accustandard, Le Mans, and Borgs Technology), I lead full-stack engineering, rootless Podman Quadlet deployments on Fedora CoreOS, vLLM inference pipelines with Bifrost Go routing, and operational systems architecture.`
 };
 
 export const PHILOSOPHY_STEPS: PhilosophyStep[] = [
@@ -120,10 +120,10 @@ export interface ProjectItem {
 export const PROJECTS_DATA: ProjectItem[] = [
   {
     id: 'p1',
-    title: 'Enterprise Financial Audit Platform',
+    title: 'Logistics & Operational Audit Platform (PIMASCOR)',
     category: 'biz',
-    categoryLabel: 'Operational Systems',
-    description: 'Designed and deployed an enterprise financial application to replace error-prone spreadsheet workflows with strict approval chains, automated budget liquidations, and immutable database audit logs. Built with a FastAPI backend, React dashboard, PostgreSQL database, and Caddy reverse proxy running inside isolated rootless Podman containers.',
+    categoryLabel: 'Product Engineering',
+    description: 'Serving as CTO under BRIDGE, designed and deployed an enterprise logistics and financial application to replace error-prone spreadsheet workflows with strict approval chains, automated budget liquidations, and immutable audit logs. Built with FastAPI, React, PostgreSQL, and Caddy running inside isolated rootless Podman containers.',
     tags: ['FastAPI', 'React', 'TypeScript', 'PostgreSQL', 'Rootless Podman', 'Caddy Server', 'REST API', 'Audit Logs'],
     metrics: [
       '100% Financial Audit Traceability',
@@ -133,6 +133,32 @@ export const PROJECTS_DATA: ProjectItem[] = [
   },
   {
     id: 'p2',
+    title: 'Medical Supply Chain Platform (Accustandard)',
+    category: 'biz',
+    categoryLabel: 'Product Engineering',
+    description: 'Serving as CTO, leading product architecture and engineering for an operational medical supply chain application. Streamlines approved supplier setup, purchasing, receiving inspections, lot/serial inventory controls, quotation workflows, sales orders, and delivery tracking.',
+    tags: ['Product Architecture', 'React', 'TypeScript', 'Inventory Control', 'Lot & Serial Traceability', 'Supplies Management'],
+    metrics: [
+      'End-to-End Inventory & Lot Control',
+      'Quotations to Delivery Traceability',
+      'Purpose-Built Medical Supply SOPs'
+    ]
+  },
+  {
+    id: 'p3',
+    title: 'Automotive Repair & Service Application (Le Mans)',
+    category: 'biz',
+    categoryLabel: 'Product Engineering',
+    description: 'Serving as CTO, engineered a purpose-built workshop management application for automotive repair and maintenance workflows. Features customer intake, vehicle inspections, instant estimates, job tracking, technician assignments, supplier parts costs, and quality release checks.',
+    tags: ['Workshop Operations', 'React', 'TypeScript', 'Vehicle Intake', 'Work Orders', 'Parts Costing'],
+    metrics: [
+      'Vehicle Intake to Release Workflow',
+      'Technician Job & Estimate Tracking',
+      'Real-Time Parts & Labor Transparency'
+    ]
+  },
+  {
+    id: 'p4',
     title: 'Self-Hosted AI Model Engine',
     category: 'ai',
     categoryLabel: 'AI Infrastructure',
@@ -145,7 +171,7 @@ export const PROJECTS_DATA: ProjectItem[] = [
     ]
   },
   {
-    id: 'p3',
+    id: 'p5',
     title: 'Automated Linux Server Platform',
     category: 'devops',
     categoryLabel: 'Platform Engineering',
@@ -158,20 +184,7 @@ export const PROJECTS_DATA: ProjectItem[] = [
     ]
   },
   {
-    id: 'p4',
-    title: 'Startup Operations & System Setup',
-    category: 'biz',
-    categoryLabel: 'Systems & Ops',
-    description: 'Converted early-stage business concepts into structured operating systems, database schemas, and standard operating procedures (SOPs). Built end-to-end task tracking, launch readiness workflows, process flowcharts, and operational structures in Airtable & Notion.',
-    tags: ['SOP Design', 'Process Mapping', 'Airtable', 'Notion', 'Systems Architecture', 'Operations Strategy'],
-    metrics: [
-      'End-to-End SOP & Process Flowcharts',
-      'Structured Airtable & Notion Workspaces',
-      'Operational Strategy & Launch Readiness'
-    ]
-  },
-  {
-    id: 'p5',
+    id: 'p6',
     title: 'ESL Program Operations & Language Coaching',
     category: 'edu',
     categoryLabel: 'Education & Operations',
