@@ -33,7 +33,7 @@ For a deeper dive into the infrastructure setup, check out [ARCHITECTURE.md](ARC
 |---|---|
 | **Frontend** | HTML5, Vanilla TypeScript 5.7, Vite 6, Custom CSS Tokens, Glassmorphic UI |
 | **Container Engine** | Podman Rootless + Systemd Quadlets (`.container` & `.volume`) |
-| **Web Server** | Caddy Server (Rootless container, automatic TLS 1.3, HTTP/3) |
+| **Web Server** | Caddy Server (Rootless Podman container, automatic TLS 1.3, HTTP/3) |
 | **Host OS** | Fedora CoreOS (Immutable base, atomic `rpm-ostree` updates, SELinux Enforcing) |
 | **CDN & Edge** | Bunny.net Anycast CDN (DDoS mitigation, Brotli compression, Edge Caching) |
 | **AI Workloads** | Ubuntu Cloud GPUs (RunPod & Hyperstack), PyTorch, vLLM, Bifrost (Go proxy), big-AGI |

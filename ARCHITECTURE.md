@@ -10,7 +10,7 @@ When building the infrastructure for this site, I prioritized three core princip
 
 1. **Host Immutability**: The operating system should be disposable and fully reproducible. System packages aren't installed directly on the host OS; container workloads run isolated on top.
 2. **Minimal Runtime Overhead**: The frontend relies on native web APIs rather than client-side frameworks. This keeps initial page load fast and eliminates bundle bloat.
-3. **Rootless Security by Default**: Every container process runs unprivileged without root access, minimizing the blast radius in the event of a container breakout.
+3. **Rootless Podman Security by Default**: Every container process runs unprivileged without root access via Rootless Podman, minimizing the blast radius in the event of a container breakout.
 
 ---
 
@@ -73,7 +73,7 @@ WantedBy=default.target
 ### Key Advantages of Quadlets:
 - **Native Systemd Lifecycle**: Commands like `systemctl --user status caddy` or `journalctl --user -u caddy` work natively.
 - **Automatic Restart & Recovery**: Systemd automatically restarts containers if they crash or after host reboots.
-- **Rootless Execution**: Containers run under unprivileged user namespaces. Container process IDs map to non-root IDs on the host.
+- **Rootless Podman Execution**: Containers run under unprivileged user namespaces via Rootless Podman. Container process IDs map to non-root IDs on the host.
 
 ---
 
