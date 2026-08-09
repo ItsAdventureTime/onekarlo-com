@@ -54,20 +54,17 @@ node scratch/test_audit.js
 
 ---
 
-## 🔐 Commit Signing & GitHub CLI Integration
+## 🔐 Local Git Commits & GitHub CLI HTTPS Integration
 
-All commits in this repository require 1Password SSH signature verification and remote management via **GitHub CLI (`gh`)**:
+Local commits use local `git` with 1Password SSH signature verification. Remote repository operations use **GitHub Official CLI (`gh`)** over **HTTPS** protocol (`https://github.com/ItsAdventureTime/onekarlo-com.git`), which is authenticated by default:
 
 ```bash
-# Verify GitHub CLI authentication status
+# 1. Local commit via git (signed via 1Password SSH key agent)
+git add .
+git commit -S -m "feat: your feature description"
+
+# 2. Remote repository verification and sync via GitHub CLI (HTTPS)
 gh auth status
-
-# Configure 1Password SSH commit signing
-git config --global gpg.format ssh
-git config --global user.signingkey "ssh-ed25519 YOUR_PUBLIC_KEY"
-git config --global commit.gpgsign true
-
-# View repository status online via GitHub CLI
 gh repo view ItsAdventureTime/onekarlo-com
 ```
 

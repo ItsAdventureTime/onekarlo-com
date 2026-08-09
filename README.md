@@ -93,10 +93,11 @@ rsync -avz --delete --exclude='.DS_Store' --exclude='._*' --exclude='.Spotlight-
 
 ---
 
-## 🛡️ Privacy & Commit Signing
+## 🛡️ Privacy, Local Git & Remote GitHub CLI (HTTPS)
 
-- **1Password SSH Commit Signing**: Every commit in this repository is signed using my 1Password SSH key agent (`op-ssh-sign`).
-- **Anonymized Remote Configuration**: All production SSH host details use local SSH config aliases (`gatewaysentry`), ensuring no private IP addresses or personal credentials leak into public commits.
+- **Local Git Commits & 1Password SSH Signing**: Local commits use `git` CLI with 1Password SSH key agent signing (`op-ssh-sign`).
+- **Remote GitHub CLI Integration (`gh`)**: Remote repository management and verification use **GitHub Official CLI (`gh`)** over **HTTPS** (`https://github.com/ItsAdventureTime/onekarlo-com.git`), authenticated by default.
+- **Anonymized Server Host Configuration**: Production SSH host details use local SSH config aliases (`gatewaysentry`), ensuring no private IP addresses or personal credentials leak into public commits.
 - **Private Documentation**: Personal context prompts and internal operational notes are excluded from version control via `.gitignore`.
 
 ---
