@@ -44,15 +44,28 @@ if [ -d "${PROJECT_DIR}/quadlet" ]; then
   cp -r "${PROJECT_DIR}/quadlet/"* "${QUADLET_DIR}/" || true
 fi
 
-# 5. Enforce strict permissions baseline (750 dirs, 640 files)
+# 5. Validate and format local Caddyfile snippet using transient Podman container
+if [ -f "${PROJECT_DIR}/quadlet/Caddyfile.snippet" ]; then
+  echo "--> Validating & formatting Caddyfile.snippet via transient Podman container..."
+  podman run --rm \
+    -v "${PROJECT_DIR}/quadlet:/etc/caddy:z" \
+    docker.io/library/caddy:alpine \
+    caddy fmt --overwrite /etc/caddy/Caddyfile.snippet || true
+fi
+
+# 6. Enforce strict permissions baseline (750 dirs, 640 files)
 echo "--> Applying security permissions baseline (750 dirs / 640 files)..."
 find "${DEST_DIR}" -type d -exec chmod 750 {} +
 find "${DEST_DIR}" -type f -exec chmod 640 {} +
 
-# 6. Gracefully reload Caddy inside its rootless container
+# 7. Format, validate, and gracefully reload Caddy inside rootless Podman container
 if podman container exists caddy 2>/dev/null; then
-  echo "--> Reloading Caddy configuration inside caddy container..."
-  podman exec caddy caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile || echo "Note: Reload skipped if Caddy container is idle."
+  echo "--> Formatting & validating production Caddyfile inside caddy container..."
+  podman exec caddy caddy fmt --overwrite /etc/caddy/Caddyfile || true
+  podman exec caddy caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
+  
+  echo "--> Reloading Caddy configuration inside rootless caddy container..."
+  podman exec caddy caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile
 fi
 
 echo "===================================================="
