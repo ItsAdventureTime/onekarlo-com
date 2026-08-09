@@ -51,23 +51,63 @@ Instead of managing container lifecycles with raw Docker CLI commands or externa
 
 Quadlets are a feature built directly into Podman that automatically translates declarative container definition files (`.container` and `.volume`) into native `systemd` user services.
 
-### Example Quadlet Config (`quadlet/Caddyfile.snippet`)
+### Production Quadlet Configuration (`quadlet/caddy.container.snippet`)
 
 ```ini
 [Unit]
-Description=Caddy Web Server for onekarlo.com
-After=network-online.target
+Description=Caddy rootless edge web server
 
 [Container]
-Image=docker.io/library/caddy:alpine
 ContainerName=caddy
-PublishPort=80:80
-PublishPort=443:443
-Volume=%h/onekarlo-com:/usr/share/caddy:ro
-Volume=%h/.config/containers/systemd/onekarlo-com/Caddyfile:/etc/caddy/Caddyfile:ro
+Image=docker.io/library/caddy:alpine
+AutoUpdate=registry
+
+PublishPort=80:80/tcp
+PublishPort=443:443/tcp
+PublishPort=443:443/udp
+
+Volume=/home/jk/caddy/conf:/etc/caddy:ro,Z
+Volume=/home/jk/caddy/data:/data:Z
+Volume=/home/jk/caddy/config:/config:Z
+Volume=/home/jk/onekarlo-com:/srv/onekarlo-com:ro,Z
+
+Exec=caddy run --config /etc/caddy/Caddyfile --adapter caddyfile
+LogDriver=journald
+
+[Service]
+Restart=always
+RestartSec=5
+TimeoutStartSec=900
+TimeoutStopSec=30
 
 [Install]
 WantedBy=default.target
+```
+
+### Production Caddy Security Block (`quadlet/Caddyfile.snippet`)
+
+```caddyfile
+(onekarlo_portfolio_csp) {
+	header {
+		>Content-Security-Policy "default-src 'none'; script-src 'self'; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-attr 'none'; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data:; connect-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'; worker-src 'none'; manifest-src 'self'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests"
+	}
+}
+
+onekarlo.com {
+	root * /srv/onekarlo-com
+
+	import common_security
+	import onekarlo_portfolio_csp
+	import private_noindex
+
+	@html path / /index.html
+	header @html >Cache-Control "public, max-age=300, must-revalidate"
+
+	@versioned_assets path /assets/*
+	header @versioned_assets >Cache-Control "public, max-age=31536000, immutable"
+
+	file_server
+}
 ```
 
 ### Key Advantages of Quadlets:

@@ -1,0 +1,36 @@
+[Unit]
+Description=Caddy rootless edge web server
+
+[Container]
+ContainerName=caddy
+
+Image=docker.io/library/caddy:alpine
+AutoUpdate=registry
+
+# Caddy's own edge network and application proxy networks.
+Network=caddy.network
+
+PublishPort=80:80/tcp
+PublishPort=443:443/tcp
+PublishPort=443:443/udp
+
+# Caddy configuration and persistent state.
+Volume=/home/jk/caddy/conf:/etc/caddy:ro,Z
+Volume=/home/jk/caddy/data:/data:Z
+Volume=/home/jk/caddy/config:/config:Z
+
+# Static website volume mount.
+Volume=/home/jk/onekarlo-com:/srv/onekarlo-com:ro,Z
+
+Exec=caddy run --config /etc/caddy/Caddyfile --adapter caddyfile
+
+LogDriver=journald
+
+[Service]
+Restart=always
+RestartSec=5
+TimeoutStartSec=900
+TimeoutStopSec=30
+
+[Install]
+WantedBy=default.target

@@ -1,11 +1,16 @@
-# Caddyfile block for onekarlo.com
-# Include inside ~/caddy/conf/Caddyfile
+# ============================================================
+# CSP for onekarlo.com
+# ============================================================
 
 (onekarlo_portfolio_csp) {
 	header {
-		>Content-Security-Policy "default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'; worker-src 'none'; manifest-src 'self'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests"
+		>Content-Security-Policy "default-src 'none'; script-src 'self'; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-attr 'none'; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data:; connect-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'; worker-src 'none'; manifest-src 'self'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests"
 	}
 }
+
+# ============================================================
+# onekarlo.com
+# ============================================================
 
 onekarlo.com {
 	root * /srv/onekarlo-com
