@@ -55,8 +55,8 @@ jk-sbx-project publish 3000
 
 Use either the dev server or the preview server at a time. Vite's preview
 server is for local verification, not production hosting. The production
-deployment script performs its own pinned container build before synchronizing
-files to the VPS.
+deployment script runs the same lockfile install and production build in this
+sandbox before synchronizing `dist/` to the VPS.
 
 ## Compound commands and lifecycle
 
@@ -94,6 +94,8 @@ console.
 
 ## Related references
 
+- [Docker Sandboxes](https://docs.docker.com/ai/sandboxes/)
+- [npm ci](https://docs.npmjs.com/cli/v11/commands/npm-ci/)
 - [Vite static deployment guide](https://vite.dev/guide/static-deploy.html)
 - [Contributing guide](../CONTRIBUTING.md)
 - [Deployment runbook](DEPLOYMENT.md)

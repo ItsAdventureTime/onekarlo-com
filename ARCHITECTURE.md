@@ -16,8 +16,9 @@ hostnames, addresses, and private infrastructure details.
 4. **Privacy by default**: public copy uses capability and system-pattern
    language. Identifying client, company, location, host, and credential data
    stays out of the public repository.
-5. **Reproducible delivery**: builds run from the lockfile in a pinned Node.js
-   container; production delivery validates the target before synchronization.
+5. **Reproducible delivery**: builds run from the lockfile inside the project
+   Docker Sandbox; production delivery validates the target before
+   synchronization.
 
 ## Execution planes
 
@@ -30,8 +31,8 @@ The project separates control, local execution, and production delivery:
 | VPS production plane | Rootless Podman, Quadlet-managed Caddy, and static files |
 
 Use `jk-sbx-project exec` for local project commands. The deployment script is
-an operator boundary: it performs its pinned container build and SSH transfer
-only when an intentional production deployment is requested.
+an operator boundary: it builds inside the initialized sandbox, then performs
+only the intentional SSH transfer and remote Caddy reload.
 
 ## Runtime flow
 
@@ -110,15 +111,13 @@ copy.
 ## Build boundary
 
 The production command is `vite build`, which creates a static bundle in
-`dist/`. Local source validation runs inside the Docker Sandbox with
-`jk-sbx-project exec npm run build`. The deployment script separately copies
-only the package manifests, Vite entry files, `src/`, and `public/` into an
-isolated pinned Node.js container before running `npm ci` and the production
-build for the VPS transfer.
+`dist/`. Local source validation and deployment builds run inside the Docker
+Sandbox with `npm ci` followed by `npm run build`. The deployment script then
+copies only the generated `dist/` output to the VPS.
 
-The deployment build boundary excludes `.git`, host sockets, credentials, and
-unrelated workspace files. `vite preview` may verify `dist/` inside the
-sandbox but is not a production server.
+The deployment artifact boundary is `dist/`: `.git`, credentials, and
+unrelated workspace files are never synchronized by `deploy.sh`. `vite
+preview` may verify `dist/` inside the sandbox but is not a production server.
 
 ## Caddy and Quadlet contract
 
@@ -189,10 +188,12 @@ The script expects the existing rootless Caddy service to use:
 - `/home/jk/.config/containers/systemd/caddy/caddy.container`;
 - `/home/jk/onekarlo-com` on the host, mounted at `/srv/onekarlo-com`.
 
-It expands the live Caddyfile's absolute handler imports, streams it through
-standard input to Caddy for validation, builds in Podman, syncs the generated
-site, and reloads Caddy only after validation. It does not install Quadlets,
-replace the complete Caddyfile, or create missing production paths.
+It builds in the project Docker Sandbox, expands the live Caddyfile's absolute
+handler imports, streams it through standard input to Caddy for validation,
+syncs the generated site, and reloads Caddy only after validation. Podman is
+used only on the VPS to inspect and reload the rootless Caddy container. The
+script does not install Quadlets, replace the complete Caddyfile, or create
+missing production paths.
 See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for the runbook.
 
 ## Change impact guide
@@ -203,5 +204,5 @@ See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for the runbook.
 | Filter or dialog behavior | `src/projects.ts`, `src/main.ts` | keyboard and mobile QA |
 | Layout or motion | `src/styles/` | desktop/mobile/reduced-motion QA |
 | Terminal or topology | `src/terminal.ts`, `src/topology.ts` | build and interaction QA |
-| Delivery behavior | `deploy.sh`, `docs/DEPLOYMENT.md` | `bash -n`, container build, dry review |
+| Delivery behavior | `deploy.sh`, `docs/DEPLOYMENT.md` | `bash -n`, sandbox build, dry review |
 | Caddy reference | `quadlet/`, `ARCHITECTURE.md` | format and syntax review |

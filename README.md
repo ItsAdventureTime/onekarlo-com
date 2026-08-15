@@ -1,9 +1,9 @@
 # onekarlo.com: Engineering Portfolio
 
-[![Node.js](https://img.shields.io/badge/Node.js-22%20container%20build-green.svg)](https://nodejs.org)
+[![Docker Sandbox](https://img.shields.io/badge/Local%20Build-Docker%20Sandbox-2496ED.svg)](https://docs.docker.com/ai/sandboxes/)
 [![Vite](https://img.shields.io/badge/Vite-6.4.3-646CFF.svg)](https://vite.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9.3-3178C6.svg)](https://www.typescriptlang.org)
-[![Podman](https://img.shields.io/badge/Build-Podman-892CA0.svg)](https://podman.io)
+[![Caddy](https://img.shields.io/badge/VPS-Caddy-1F88C0.svg)](https://caddyserver.com/)
 
 This repository contains the source for a personal engineering portfolio. It
 uses a small static frontend to explain active projects, systems work, and the
@@ -20,7 +20,7 @@ clients, companies, locations, hosts, or private infrastructure.
 - A simulated terminal and topology inspector built with browser APIs.
 - A lightweight HTML, TypeScript, and CSS application with no frontend
   framework runtime.
-- A containerized build and a guarded Caddy deployment path for static output.
+- A sandboxed build and a guarded Caddy deployment path for static output.
 
 ## Stack
 
@@ -28,9 +28,9 @@ clients, companies, locations, hosts, or private infrastructure.
 | --- | --- |
 | Frontend | HTML, TypeScript, Vite, modular CSS, design tokens |
 | Runtime | Native browser APIs and ES modules |
-| Build | Node.js 22 container, npm lockfile, Vite production build |
+| Build | Docker Sandbox, npm lockfile, Vite production build |
 | Local execution | Docker Sandbox via `jk-sbx-project` |
-| Delivery | Podman, rootless Caddy, systemd Quadlet references, rsync |
+| Delivery | SSH/rsync, rootless Caddy, systemd Quadlet references |
 
 ## Repository map
 
@@ -51,7 +51,8 @@ Prerequisites:
 
 - Docker Desktop (or a compatible Docker Engine).
 - The `jk-sbx-project` command-line wrapper.
-- Podman, `rsync`, and `ssh` only when using the production deployment script.
+- `rsync` and `ssh` when using the production deployment script; Podman remains
+  a VPS-side Caddy prerequisite.
 
 The repository's local execution plane is a deterministic Docker Sandbox. From
 the project root:
@@ -103,14 +104,18 @@ The script expects the existing rootless Caddy service to use:
 
 The script:
 
-1. Validates Podman, rsync, and the fixed VPS paths.
-2. Verifies the Caddy container is running and maps `/srv/onekarlo-com` to
+1. Builds locally inside the initialized Docker Sandbox.
+2. Validates rsync, SSH, and the fixed VPS paths.
+3. Verifies the Caddy container is running and maps `/srv/onekarlo-com` to
 `/home/jk/onekarlo-com`.
-3. Validates the active Caddyfile before changing public files.
-4. Builds in an isolated, pinned Node.js container.
+4. Validates the active Caddyfile before changing public files.
 5. Synchronizes generated files while preserving site-owned state and replacing
    versioned assets without stale files.
-6. Reloads the already-validated Caddy configuration.
+6. Reloads the already-validated Caddy configuration through the VPS's
+   rootless Podman-managed Caddy container.
+
+The deployment workstation does not need Podman; only the VPS-side Caddy
+service uses it for validation and reload.
 
 It does not install Quadlets, replace a complete Caddyfile, or create missing
 production directories. Read [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) before

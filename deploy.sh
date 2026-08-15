@@ -3,7 +3,7 @@ set -Eeuo pipefail
 
 # Fixed production target. Run this file directly:
 #
-#   bash ./deploy.sh
+#   ./deploy.sh
 #
 # SSH may still ask for the VPS password unless the host has a key configured.
 readonly REMOTE="jk@216.75.75.136"
@@ -14,15 +14,15 @@ readonly REMOTE_WEB_ROOT="/home/jk/onekarlo-com"
 readonly CADDY_CONTAINER="caddy"
 readonly CADDY_CONFIG="/etc/caddy/Caddyfile"
 readonly CONTAINER_WEB_ROOT="/srv/onekarlo-com"
-readonly NODE_IMAGE="docker.io/library/node:22.14.0-alpine3.21"
+readonly SANDBOX_COMMAND="jk-sbx-project"
 
 echo "===================================================="
 echo " Deploying onekarlo.com"
 echo "===================================================="
 
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BUILD_DIR="$(mktemp -d "${TMPDIR:-/tmp}/onekarlo-build.XXXXXX")"
-SSH_CONTROL="${BUILD_DIR}/ssh-control"
+RUN_DIR="$(mktemp -d "${TMPDIR:-/tmp}/onekarlo-deploy.XXXXXX")"
+SSH_CONTROL="${RUN_DIR}/ssh-control"
 SSH_ARGS=(-o ControlMaster=auto -o ControlPersist=60 -o "ControlPath=${SSH_CONTROL}")
 RSYNC_SSH="ssh -o ControlMaster=auto -o ControlPersist=60 -o ControlPath=${SSH_CONTROL}"
 
@@ -30,7 +30,7 @@ cleanup() {
   if [ -S "${SSH_CONTROL}" ]; then
     ssh "${SSH_ARGS[@]}" -O exit -- "${REMOTE}" >/dev/null 2>&1 || true
   fi
-  rm -rf -- "${BUILD_DIR}"
+  rm -rf -- "${RUN_DIR}"
 }
 trap cleanup EXIT
 
@@ -39,11 +39,18 @@ fail() {
   exit 1
 }
 
-for command_name in podman rsync ssh; do
+for command_name in "${SANDBOX_COMMAND}" rsync ssh; do
   command -v "${command_name}" >/dev/null 2>&1 || fail "${command_name} is required"
 done
 
-podman info >/dev/null || fail "Podman is unavailable; start the Podman machine first"
+cd "${PROJECT_DIR}"
+
+echo "--> Building the site inside the project Docker Sandbox..."
+"${SANDBOX_COMMAND}" ensure
+"${SANDBOX_COMMAND}" run \
+  'npm ci --no-audit --no-fund --no-update-notifier && npm run build'
+
+test -f "${PROJECT_DIR}/dist/index.html" || fail "Build did not produce dist/index.html"
 
 echo "--> Checking the VPS and Caddy configuration..."
 if ! ssh "${SSH_ARGS[@]}" -- "${REMOTE}" bash -s -- \
@@ -149,30 +156,6 @@ then
   fail "VPS preflight failed; no live files were changed"
 fi
 
-echo "--> Building the site in an isolated Podman container..."
-podman run --rm \
-  -e NPM_CONFIG_UPDATE_NOTIFIER=false \
-  -v "${PROJECT_DIR}:/src:ro,z" \
-  -v "${BUILD_DIR}:/build:z" \
-  -w /build \
-  "${NODE_IMAGE}" \
-  sh -c '
-    set -Eeuo pipefail
-    rm -rf /build/node_modules /build/dist
-    for input in package.json package-lock.json index.html tsconfig.json vite.config.ts; do
-      test -f "/src/${input}"
-      cp -a "/src/${input}" /build/
-    done
-    cp -a /src/src /build/src
-    if [ -d /src/public ]; then
-      cp -a /src/public /build/public
-    fi
-    npm ci --no-audit --no-fund --no-update-notifier
-    npm run build
-  '
-
-test -d "${BUILD_DIR}/dist" || fail "Build did not produce dist/"
-
 RSYNC_COMMON_ARGS=(
   --archive
   --compress
@@ -188,13 +171,13 @@ echo "--> Syncing the generated site to ${REMOTE_WEB_ROOT}..."
 rsync "${RSYNC_COMMON_ARGS[@]}" \
   --exclude='assets/' \
   -e "${RSYNC_SSH}" \
-  "${BUILD_DIR}/dist/" "${REMOTE}:${REMOTE_WEB_ROOT%/}/"
+  "${PROJECT_DIR}/dist/" "${REMOTE}:${REMOTE_WEB_ROOT%/}/"
 
-if [ -d "${BUILD_DIR}/dist/assets" ]; then
+if [ -d "${PROJECT_DIR}/dist/assets" ]; then
   rsync "${RSYNC_COMMON_ARGS[@]}" \
     --delete \
     -e "${RSYNC_SSH}" \
-    "${BUILD_DIR}/dist/assets/" "${REMOTE}:${REMOTE_WEB_ROOT%/}/assets/"
+    "${PROJECT_DIR}/dist/assets/" "${REMOTE}:${REMOTE_WEB_ROOT%/}/assets/"
 fi
 
 echo "--> Reloading the validated Caddy configuration..."

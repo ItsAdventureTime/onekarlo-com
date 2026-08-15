@@ -96,4 +96,4 @@ and [Motion's JavaScript animation guide](https://motion.dev/docs/animate).
 - [ ] SmoothUI-inspired section reveals animate transform/opacity only and
       bypass reduced motion.
 - [ ] Configuration labels and copy actions remain separated and wrap cleanly.
-- [ ] The Podman production build passes before release.
+- [ ] The Docker Sandbox production build passes before release.

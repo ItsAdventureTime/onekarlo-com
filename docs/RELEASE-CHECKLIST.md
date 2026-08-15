@@ -22,7 +22,7 @@ authenticated GitHub HTTPS remote and, separately, to a configured web target.
 
 ~~~bash
 jk-sbx-project ensure
-jk-sbx-project exec npm run build
+jk-sbx-project run 'npm ci --no-audit --no-fund --no-update-notifier && npm run build'
 bash -n deploy.sh
 git diff --check
 ~~~
@@ -121,11 +121,11 @@ the commit is on the intended branch and the fixed VPS has been reviewed, run:
 ./deploy.sh
 ~~~
 
-Do not set deployment variables. The script owns the fixed SSH target and
-remote paths, validates Caddy before syncing, and reloads it only after a
-successful build and transfer. Follow [DEPLOYMENT.md](DEPLOYMENT.md) for the
-server contract and recovery steps. This does not change the GitHub HTTPS
-requirement.
+Do not set deployment variables. The script builds in the initialized project
+Docker Sandbox, owns the fixed SSH target and remote paths, validates the VPS
+Caddy container before syncing, and reloads it only after a successful build
+and transfer. Follow [DEPLOYMENT.md](DEPLOYMENT.md) for the server contract and
+recovery steps. This does not change the GitHub HTTPS requirement.
 
 ## 7. Post-release record
 

@@ -36,10 +36,8 @@ the complete operator-managed Caddyfile.
 
 The workstation needs:
 
-- Docker Desktop (or a compatible Docker Engine) and `jk-sbx-project` for
-  local validation;
-- Podman with a running machine or service for the deployment script's pinned
-  production build;
+- Docker Desktop (or a compatible Docker Engine) and the initialized
+  `jk-sbx-project` sandbox;
 - `rsync` and `ssh`;
 - network access to the VPS;
 - an SSH key or the VPS password.
@@ -60,13 +58,13 @@ path and recommends managing the generated service with user-level systemd:
 
 1. Reuses one SSH connection so a password prompt is not repeated for every
    phase.
-2. Checks the fixed Caddy directory, Caddyfile, Quadlet, and web root.
-3. Confirms the running container maps the expected host paths.
-4. Expands the two absolute handler imports, then streams the Caddyfile to
-   `caddy validate --config -` inside the running container.
-5. Builds the site in a pinned Node.js Podman container.
-6. Syncs generated files to `/home/jk/onekarlo-com` while preserving unrelated
-   root entries and replacing stale hashed assets.
+2. Runs `npm ci` and `npm run build` inside the project Docker Sandbox.
+3. Checks the fixed Caddy directory, Caddyfile, Quadlet, and web root.
+4. Confirms the running container maps the expected host paths.
+5. Expands the two absolute handler imports, then streams the Caddyfile to
+   `caddy validate --config -` inside the running VPS container.
+6. Syncs the generated `dist/` files to `/home/jk/onekarlo-com` while
+   preserving unrelated root entries and replacing stale hashed assets.
 7. Reloads Caddy only after validation and a successful sync.
 
 Caddy documents `caddy validate` as a stronger check than config adaptation,
@@ -85,10 +83,10 @@ bash -n deploy.sh
 git diff --check
 ```
 
-The deployment script still checks `podman info` and performs its isolated
-Node.js container build when it is run. That production-transfer boundary is
-separate from normal local source validation. See
-[LOCAL-DEVELOPMENT.md](LOCAL-DEVELOPMENT.md) for sandbox commands.
+The deployment script does not require local Podman. The remote preflight and
+reload still use Podman on the VPS because Caddy is managed there as a rootless
+Podman container. See [LOCAL-DEVELOPMENT.md](LOCAL-DEVELOPMENT.md) for the
+sandbox commands used before and during deployment.
 
 Do not run `vite preview` as the production server. It is for local
 verification only. The production build guide is available in the
