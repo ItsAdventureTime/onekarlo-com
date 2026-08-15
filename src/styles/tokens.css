@@ -70,7 +70,9 @@
   /* Responsive canvas */
   --layout-max: 1760px;
   --layout-gutter: clamp(1rem, 2.4vw, 2.75rem);
-  --section-space: clamp(3.25rem, 4vw, 5.25rem);
+  /* Section rhythm: keep endings breathable, tighten starts between neighbors. */
+  --section-space: clamp(2.75rem, 3.5vw, 4.5rem);
+  --section-space-tight-start: clamp(1.5rem, 2.2vw, 2.75rem);
 
   /* Border Radii */
   --radius-xs: 0.25rem;

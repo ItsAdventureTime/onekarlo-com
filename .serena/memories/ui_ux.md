@@ -1,6 +1,7 @@
 # UI and UX conventions
 - Use the shared page container with a wide fluid canvas and local readable text measures.
 - Keep section rhythm tokenized; avoid stacking large adjacent section paddings.
+- Use the shared tight-start rhythm between neighboring sections instead of adding local top margins.
 - Prefer CSS Grid and available-space breakpoints for cards and multi-column sections.
 - Public copy uses English (US), sentence case, short concrete sentences, and a professional conversational tone.
 - Keep project content anonymized; describe workflows, constraints, design choices, and safe technical details.

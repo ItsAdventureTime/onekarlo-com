@@ -15,6 +15,8 @@ lines become difficult to read.
   controls become cramped.
 - Keep section spacing consistent. Do not stack large bottom padding on one
   section with large top padding on the next.
+- Keep a breathable section ending, then use the shared tight-start rhythm for
+  the section that follows. Avoid adding local top margins to compensate.
 - Keep the project grid broad on desktop and single-column on narrow screens.
 
 The current layout uses a wide page canvas, fluid gutters, and a smaller text

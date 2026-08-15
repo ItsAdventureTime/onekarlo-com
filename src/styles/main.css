@@ -228,7 +228,7 @@ input[type="text"] {
 }
 
 .section {
-  padding: var(--section-space) 0;
+  padding-block: var(--section-space);
   position: relative;
   z-index: 2;
   content-visibility: auto;
@@ -237,30 +237,37 @@ input[type="text"] {
 
 #hero, .hero-section {
   content-visibility: visible !important;
-  padding-top: clamp(7.5rem, 12vh, 10.5rem);
-  padding-bottom: clamp(1.75rem, 2.5vw, 3.5rem);
+  padding-block-start: clamp(7.5rem, 12vh, 10.5rem);
+  padding-block-end: clamp(1.75rem, 2.5vw, 3.5rem);
 }
 
 @media (max-width: 768px) {
   .section {
-    padding: 1.75rem 0;
+    padding-block: 1.75rem;
   }
   #hero, .hero-section {
-    padding-top: 8rem !important;
-    padding-bottom: 3rem !important;
+    padding-block-start: 8rem !important;
+    padding-block-end: 3rem !important;
   }
+}
+
+/* Connect neighboring sections while preserving a readable bottom rhythm. */
+#hero + .section,
+.hero-section + .section,
+.section + .section {
+  padding-block-start: var(--section-space-tight-start);
 }
 
 /* Section Header Structure */
 .section-header {
   text-align: left;
   max-width: 920px;
-  margin-bottom: clamp(2rem, 3.5vw, 3.5rem);
+  margin-block-end: clamp(1.5rem, 2.5vw, 2.5rem);
 }
 
 @media (max-width: 768px) {
   .section-header {
-    margin-bottom: 1.25rem;
+    margin-block-end: 1.25rem;
   }
 }
 
