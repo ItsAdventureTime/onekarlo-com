@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">onekarlo.com | JK de Guzman</title>
+  <desc id="desc">Full-stack product engineering, AI infrastructure, and platform operations.</desc>
+  <rect width="1200" height="630" fill="#070a12"/>
+  <circle cx="1010" cy="92" r="300" fill="#10b981" opacity=".09"/>
+  <circle cx="1120" cy="540" r="220" fill="#10b981" opacity=".06"/>
+  <path d="M72 540H1128" stroke="#10b981" stroke-opacity=".28"/>
+  <rect x="72" y="76" width="12" height="12" rx="6" fill="#10b981"/>
+  <text x="108" y="88" fill="#f8fafc" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="28" font-weight="700">onekarlo.com</text>
+  <text x="72" y="258" fill="#f8fafc" font-family="Arial, Helvetica, sans-serif" font-size="68" font-weight="700">JK de Guzman</text>
+  <text x="72" y="330" fill="#10b981" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="700">Product engineer and solutions consultant</text>
+  <text x="72" y="412" fill="#94a3b8" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="24">Business applications · AI infrastructure · Linux platforms</text>
+  <text x="72" y="580" fill="#64748b" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="20">Build / operate / improve</text>
+</svg>

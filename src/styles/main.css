@@ -1,17 +1,11 @@
 /* ==========================================================================
-   Global Base Styles & Mobile Spacing Optimization - onekarlo.com
+   Global Base Styles & Design Foundations - onekarlo.com
    ========================================================================== */
 
 @import './tokens.css';
 
 :root {
   color-scheme: dark;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: dark;
-  }
 }
 
 *, *::before, *::after {
@@ -22,11 +16,11 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 95px;
+  scroll-padding-top: 90px;
   font-family: var(--font-body);
   background-color: var(--bg-dark);
   color: var(--text-primary);
-  line-height: 1.65;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -34,22 +28,26 @@ html {
 
 @media (max-width: 768px) {
   html {
-    scroll-padding-top: 135px;
+    scroll-padding-top: 130px;
   }
 }
 
 body {
-  min-height: 100vh;
+  min-height: 100dvh;
   overflow-x: hidden;
   position: relative;
   background-color: var(--bg-dark);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(16, 185, 129, 0.08), transparent 70%),
+    radial-gradient(circle at 100% 40%, rgba(16, 185, 129, 0.035), transparent 50%);
+  background-attachment: fixed;
 }
 
-/* Background Cyber Canvas */
+/* Ambient Particle Canvas */
 #bg-canvas {
   position: fixed;
-  top: 0;
-  left: 0;
+  inset: 0;
+  display: block;
   width: 100vw;
   height: 100vh;
   pointer-events: none;
@@ -57,21 +55,48 @@ body {
   opacity: 0.65;
 }
 
-/* Interactive Cursor Radial Spotlight Follower */
+body.modal-open {
+  overflow: hidden;
+}
+
+/* Accessible Skip to Content Link */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 1.5rem;
+  background: var(--accent-primary);
+  color: #040812;
+  font-weight: 700;
+  font-size: 0.875rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--radius-md);
+  z-index: 9999;
+  text-decoration: none;
+  transition: top var(--transition-fast);
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.5);
+}
+
+.skip-link:focus {
+  top: 1rem;
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+/* Ambient Radial Cursor Glow (Desktop Only) */
 #cursor-glow {
   position: fixed;
   top: 0;
   left: 0;
-  width: 500px;
-  height: 500px;
-  margin-top: -250px;
-  margin-left: -250px;
+  width: 450px;
+  height: 450px;
+  margin-top: -225px;
+  margin-left: -225px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(56, 189, 248, 0.12) 0%, rgba(16, 185, 129, 0.04) 45%, transparent 70%);
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, rgba(6, 182, 212, 0.03) 40%, transparent 70%);
   pointer-events: none;
   z-index: 1;
   transform: translate3d(0, 0, 0);
-  transition: transform 80ms ease-out;
+  transition: transform 60ms ease-out;
   mix-blend-mode: screen;
 }
 
@@ -85,7 +110,7 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
   font-weight: 700;
-  line-height: 1.25;
+  line-height: 1.2;
   color: var(--text-primary);
   letter-spacing: -0.025em;
   text-wrap: balance;
@@ -93,19 +118,37 @@ h1, h2, h3, h4, h5, h6 {
 
 p {
   text-wrap: pretty;
+  line-height: 1.65;
+  color: var(--text-secondary);
 }
 
 a {
-  color: var(--accent-cyan);
+  color: var(--accent-primary);
   text-decoration: none;
-  transition: color 100ms ease-out;
+  transition: color var(--transition-fast);
 }
 
-a:not(.nav-btn):not(.brand-logo):not(.nav-link):hover {
-  color: var(--accent-emerald);
+a:hover {
+  color: var(--accent-secondary);
 }
 
-/* Control Resets with Ultra-Instant Pointer Reactions */
+.clipboard-fallback-input {
+  position: fixed;
+  inset: 0 auto auto 0;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Number & Metric Typography */
+.tabular-nums, [data-tabular] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Control Resets & Form Controls */
 button, input, textarea {
   font-family: inherit;
   cursor: pointer;
@@ -123,15 +166,19 @@ input[type="text"] {
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent-cyan) !important;
+  outline: 2px solid var(--accent-primary) !important;
   outline-offset: 3px !important;
 }
 
-.topo-node:focus-visible, .pillar-card:focus-visible, .project-card:focus-visible, .filter-btn:focus-visible, .nav-btn:focus-visible {
+.topo-node:focus-visible,
+.pillar-card:focus-visible,
+.project-card:focus-visible,
+.filter-btn:focus-visible,
+.nav-btn:focus-visible {
   border-radius: inherit !important;
 }
 
-/* Custom Scrollbar & High Contrast Accessibility */
+/* Custom Scrollbars */
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--bg-surface-3) var(--bg-dark);
@@ -139,83 +186,81 @@ input[type="text"] {
 
 @media (prefers-contrast: more) {
   * {
-    scrollbar-color: var(--accent-cyan) var(--bg-dark);
+    scrollbar-color: var(--accent-primary) var(--bg-dark);
   }
   .pillar-card, .project-card, .pipeline-step, .topo-node {
-    border-color: rgba(255, 255, 255, 0.25) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
   }
 }
 
-@supports not (scrollbar-color: auto) {
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: var(--bg-dark);
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: var(--bg-surface-3);
-    border-radius: var(--radius-full);
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: var(--accent-cyan);
-  }
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-/* Layout Containers & Compact Mobile Section Rules */
+::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-surface-3);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-primary);
+}
+
+/* Layout Containers */
 .container {
-  width: 100%;
-  max-width: 1280px;
+  width: min(100%, var(--layout-max));
+  max-width: none;
   margin: 0 auto;
-  padding: 0 var(--space-lg);
+  padding-inline: var(--layout-gutter);
   position: relative;
   z-index: 2;
 }
 
 @media (max-width: 640px) {
   .container {
-    padding: 0 1rem;
+    padding-inline: 1.15rem;
   }
 }
 
 .section {
-  padding: 2.25rem 0;
+  padding: var(--section-space) 0;
   position: relative;
   z-index: 2;
   content-visibility: auto;
-  contain-intrinsic-size: 0 600px;
+  contain-intrinsic-size: 0 650px;
 }
 
 #hero, .hero-section {
   content-visibility: visible !important;
-  padding-top: 6.25rem;
-  padding-bottom: 1rem;
+  padding-top: clamp(7.5rem, 12vh, 10.5rem);
+  padding-bottom: clamp(1.75rem, 2.5vw, 3.5rem);
 }
 
 @media (max-width: 768px) {
   .section {
-    padding: 0.95rem 0;
+    padding: 1.75rem 0;
   }
   #hero, .hero-section {
-    padding-top: 7.75rem !important;
-    padding-bottom: 0.5rem !important;
+    padding-top: 8rem !important;
+    padding-bottom: 3rem !important;
   }
 }
 
-/* Left-aligned Section Headers */
+/* Section Header Structure */
 .section-header {
   text-align: left;
-  max-width: 800px;
-  margin-bottom: 1.5rem;
+  max-width: 920px;
+  margin-bottom: clamp(2rem, 3.5vw, 3.5rem);
 }
 
 @media (max-width: 768px) {
   .section-header {
-    margin-bottom: 0.85rem !important;
+    margin-bottom: 1.25rem;
   }
 }
 
@@ -224,29 +269,23 @@ input[type="text"] {
   align-items: center;
   gap: var(--space-xs);
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: 0.775rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--accent-cyan);
-  background: rgba(56, 189, 248, 0.1);
-  padding: 0.35rem 0.85rem;
+  color: var(--accent-primary);
+  background: var(--accent-primary-subtle);
+  padding: 0.3rem 0.8rem;
   border-radius: var(--radius-full);
-  border: 1px solid rgba(56, 189, 248, 0.25);
-  margin-bottom: 0.75rem;
-  box-shadow: 0 0 15px rgba(56, 189, 248, 0.15);
+  border: 1px solid var(--accent-primary-border);
+  margin-bottom: 0.85rem;
 }
 
 .section-title {
-  font-size: clamp(1.85rem, 4.2vw, 3.25rem);
+  font-size: clamp(2rem, 3.6vw, 3.25rem);
   margin-bottom: 0.75rem;
   letter-spacing: -0.03em;
   text-wrap: balance;
-}
-
-@media (max-width: 768px) {
-  .section-title {
-    margin-bottom: 0.5rem;
-  }
+  color: var(--text-primary);
 }
 
 .section-description {
@@ -255,55 +294,54 @@ input[type="text"] {
   line-height: 1.65;
   text-align: left;
   text-wrap: pretty;
+  max-width: 65ch;
 }
 
-/* Android Material Ink Ripple Effect */
+/* Ripple Feedback */
 .ripple {
   position: absolute;
   border-radius: 50%;
-  background: rgba(56, 189, 248, 0.3);
+  background: rgba(16, 185, 129, 0.25);
   transform: scale(0);
-  animation: rippleEffect 450ms var(--ease-android-decelerate);
+  animation: rippleEffect 400ms var(--ease-out-expo);
   pointer-events: none;
 }
 
-/* Android Material 3 Shared Axis (Y) Entrance Reveal */
+@keyframes rippleEffect {
+  0% { transform: scale(0); opacity: 0.4; }
+  100% { transform: scale(2.8); opacity: 0; }
+}
+
+/* Scroll Reveal Animations */
 .reveal-on-scroll {
   opacity: 0;
-  transform: translateY(24px) scale(0.98);
-  transition: opacity 400ms var(--ease-android-decelerate), transform 400ms var(--ease-android-decelerate);
+  transform: translateY(20px);
+  transition: opacity 350ms var(--ease-out-expo), transform 350ms var(--ease-out-expo);
   will-change: opacity, transform;
 }
 
 .reveal-on-scroll.is-visible {
   opacity: 1;
-  transform: translateY(0) scale(1);
+  transform: translateY(0);
 }
 
-/* Android M3 Expressive Container Entrance Keyframes */
+/* Dynamic Fade-Slide Entrance */
 .fade-slide-in {
-  animation: slideFadeUp 360ms var(--ease-android-decelerate) forwards;
+  animation: slideFadeUp 300ms var(--ease-out-expo) forwards;
 }
 
 @keyframes slideFadeUp {
   from {
     opacity: 0;
-    transform: translateY(18px) scale(0.98);
+    transform: translateY(14px);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
 
-/* Backdrop Filter Fallback */
-@supports not (backdrop-filter: blur(1px)) {
-  .site-header, .pillar-card, .project-card, .pipeline-step, .topology-wrapper, .modal-card {
-    background: rgba(12, 18, 32, 0.96) !important;
-  }
-}
-
-/* Reduced Motion Accessibility Override */
+/* Reduced Motion Override */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -311,7 +349,7 @@ input[type="text"] {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  #bg-canvas, #cursor-glow {
+  #cursor-glow {
     display: none !important;
   }
   .reveal-on-scroll {

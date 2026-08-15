@@ -10,6 +10,10 @@ import { TerminalEmulator, triggerHackerScramble } from './terminal';
 import { TopologyInspector } from './topology';
 import { ProjectShowcase } from './projects';
 
+function prefersReducedMotion(): boolean {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   initBgCanvas();
   initCursorGlow();
@@ -22,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initTerminal();
   initTopology();
   initProjects();
+  initKeyboardShortcuts();
 });
 
 /* --------------------------------------------------------------------------
@@ -32,7 +37,7 @@ function initHeaderScrollShrink() {
   if (!header) return;
 
   window.addEventListener('scroll', () => {
-    if (window.scrollY > 40) {
+    if (window.scrollY > 30) {
       header.classList.add('shrunk');
     } else {
       header.classList.remove('shrunk');
@@ -73,23 +78,23 @@ function initClickRipples() {
 }
 
 /* --------------------------------------------------------------------------
-   Dynamic Animated Navigation Active Indicator Slider
+   Dynamic Navigation Active Indicator Slider
    -------------------------------------------------------------------------- */
 function initNavSlider() {
-  const menu = document.getElementById('nav-menu');
+  const navContainer = document.querySelector('.nav-menu-container') as HTMLElement;
   const slider = document.getElementById('nav-slider');
   const links = document.querySelectorAll<HTMLAnchorElement>('.nav-link');
 
-  if (!menu || !slider || !links.length) return;
+  if (!navContainer || !slider || !links.length) return;
 
   function updateSlider(activeLink: HTMLAnchorElement) {
     links.forEach(l => l.classList.remove('active'));
     activeLink.classList.add('active');
 
-    const menuRect = menu!.getBoundingClientRect();
+    const containerRect = navContainer.getBoundingClientRect();
     const linkRect = activeLink.getBoundingClientRect();
 
-    const left = linkRect.left - menuRect.left;
+    const left = linkRect.left - containerRect.left;
     const width = linkRect.width;
 
     slider!.style.transform = `translateX(${left}px)`;
@@ -97,7 +102,8 @@ function initNavSlider() {
   }
 
   const initialActive = document.querySelector<HTMLAnchorElement>('.nav-link.active') || links[0];
-  setTimeout(() => updateSlider(initialActive), 100);
+  if (prefersReducedMotion()) updateSlider(initialActive);
+  else setTimeout(() => updateSlider(initialActive), 120);
 
   if ('fonts' in document) {
     document.fonts.ready.then(() => {
@@ -145,12 +151,7 @@ function initNavSlider() {
         e.preventDefault();
         const targetSection = document.querySelector(href);
         if (targetSection) {
-          targetSection.scrollIntoView({ behavior: 'smooth' });
-
-          const titleEl = targetSection.querySelector<HTMLElement>('.section-title, .hero-title');
-          if (titleEl) {
-            triggerHackerScramble(titleEl);
-          }
+          targetSection.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
         }
       }
     });
@@ -158,7 +159,7 @@ function initNavSlider() {
 }
 
 /* --------------------------------------------------------------------------
-   Background Cyber Canvas (Decelerated Ambient Floating Drift)
+   Background Ambient Cyber Particles (Optimized with Visibility Pause)
    -------------------------------------------------------------------------- */
 function initBgCanvas() {
   const canvas = document.getElementById('bg-canvas') as HTMLCanvasElement;
@@ -169,10 +170,19 @@ function initBgCanvas() {
 
   let width = canvas.width = window.innerWidth;
   let height = canvas.height = window.innerHeight;
+  let isRunning = !prefersReducedMotion();
 
   window.addEventListener('resize', () => {
     width = canvas.width = window.innerWidth;
     height = canvas.height = window.innerHeight;
+  });
+
+  // Pause animation when tab is inactive to save battery and GPU cycles
+  document.addEventListener('visibilitychange', () => {
+    isRunning = !document.hidden && !prefersReducedMotion();
+    if (isRunning) {
+      requestAnimationFrame(animate);
+    }
   });
 
   interface Particle {
@@ -184,30 +194,24 @@ function initBgCanvas() {
     color: string;
   }
 
-  const particleCount = Math.min(Math.floor(width / 24), 40);
+  const particleCount = Math.min(Math.floor(width / 35), 25);
   const particles: Particle[] = [];
-  const colors = ['rgba(56, 189, 248, ', 'rgba(16, 185, 129, ', 'rgba(129, 140, 248, '];
+  const colors = ['rgba(16, 185, 129, ', 'rgba(6, 182, 212, '];
 
   for (let i = 0; i < particleCount; i++) {
     particles.push({
       x: Math.random() * width,
       y: Math.random() * height,
-      vx: (Math.random() - 0.5) * 0.2,
-      vy: (Math.random() - 0.5) * 0.2,
-      radius: Math.random() * 1.5 + 1,
+      vx: (Math.random() - 0.5) * 0.15,
+      vy: (Math.random() - 0.5) * 0.15,
+      radius: Math.random() * 1.2 + 0.8,
       color: colors[Math.floor(Math.random() * colors.length)]
     });
   }
 
-  let mouseX = width / 2;
-  let mouseY = height / 2;
-
-  window.addEventListener('mousemove', (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-  });
-
   function animate() {
+    if (!isRunning) return;
+
     ctx!.clearRect(0, 0, width, height);
 
     for (let i = 0; i < particles.length; i++) {
@@ -220,42 +224,14 @@ function initBgCanvas() {
 
       ctx!.beginPath();
       ctx!.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-      ctx!.fillStyle = p.color + '0.7)';
+      ctx!.fillStyle = p.color + '0.45)';
       ctx!.fill();
-
-      for (let j = i + 1; j < particles.length; j++) {
-        const p2 = particles[j];
-        const dx = p.x - p2.x;
-        const dy = p.y - p2.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-
-        if (dist < 140) {
-          ctx!.beginPath();
-          ctx!.moveTo(p.x, p.y);
-          ctx!.lineTo(p2.x, p2.y);
-          ctx!.strokeStyle = `rgba(56, 189, 248, ${0.12 * (1 - dist / 140)})`;
-          ctx!.lineWidth = 0.8;
-          ctx!.stroke();
-        }
-      }
-
-      const mdx = p.x - mouseX;
-      const mdy = p.y - mouseY;
-      const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
-      if (mdist < 180) {
-        ctx!.beginPath();
-        ctx!.moveTo(p.x, p.y);
-        ctx!.lineTo(mouseX, mouseY);
-        ctx!.strokeStyle = `rgba(16, 185, 129, ${0.18 * (1 - mdist / 180)})`;
-        ctx!.lineWidth = 1;
-        ctx!.stroke();
-      }
     }
 
     requestAnimationFrame(animate);
   }
 
-  animate();
+  if (isRunning) animate();
 }
 
 /* --------------------------------------------------------------------------
@@ -263,7 +239,7 @@ function initBgCanvas() {
    -------------------------------------------------------------------------- */
 function initCursorGlow() {
   const glow = document.getElementById('cursor-glow');
-  if (!glow) return;
+  if (!glow || prefersReducedMotion()) return;
 
   window.addEventListener('mousemove', (e) => {
     glow.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
@@ -271,25 +247,24 @@ function initCursorGlow() {
 }
 
 /* --------------------------------------------------------------------------
-   Card Mouse Spotlight Micro-Interactions
+   Card Spotlight Micro-Interactions
    -------------------------------------------------------------------------- */
 function initCardSpotlights() {
-  const cards = document.querySelectorAll<HTMLElement>('.pillar-card, .project-card, .pipeline-step, .topo-node');
+  document.addEventListener('mousemove', (e) => {
+    const card = (e.target as HTMLElement).closest<HTMLElement>('.pillar-card, .project-card, .pipeline-step, .topo-node');
+    if (!card) return;
 
-  cards.forEach(card => {
-    card.addEventListener('mousemove', (e) => {
-      const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
 
-      card.style.setProperty('--mouse-x', `${x}px`);
-      card.style.setProperty('--mouse-y', `${y}px`);
-    });
-  });
+    card.style.setProperty('--mouse-x', `${x}px`);
+    card.style.setProperty('--mouse-y', `${y}px`);
+  }, { passive: true });
 }
 
 /* --------------------------------------------------------------------------
-   Scroll Reveal Animations (Simultaneous iOS Slide Reveals)
+   Scroll Reveal Animations
    -------------------------------------------------------------------------- */
 function initScrollReveal() {
   const reveals = document.querySelectorAll('.reveal-on-scroll');
@@ -305,7 +280,7 @@ function initScrollReveal() {
 }
 
 /* --------------------------------------------------------------------------
-   Module Initializations
+   Philosophy Pipeline Rendering
    -------------------------------------------------------------------------- */
 function initPhilosophyPipeline() {
   const container = document.getElementById('philosophy-pipeline');
@@ -313,11 +288,31 @@ function initPhilosophyPipeline() {
 
   container.innerHTML = PHILOSOPHY_STEPS.map(step => `
     <div class="pipeline-step" tabindex="0" role="article">
-      <div class="step-num">0${step.stepNum}</div>
+      <div class="step-header-row">
+        <span class="step-num tabular-nums">0${step.stepNum}</span>
+        <span class="step-phase">${step.phase}</span>
+      </div>
       <h3 class="step-title">${step.title}</h3>
       <p class="step-desc">${step.desc}</p>
     </div>
   `).join('');
+}
+
+/* --------------------------------------------------------------------------
+   Global Keyboard Shortcuts
+   -------------------------------------------------------------------------- */
+function initKeyboardShortcuts() {
+  window.addEventListener('keydown', (e) => {
+    // Press '/' to focus terminal input if not typing inside an input/textarea
+    if (e.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+      e.preventDefault();
+      const terminalInput = document.getElementById('terminal-input') as HTMLInputElement;
+      if (terminalInput) {
+        terminalInput.focus();
+        terminalInput.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'center' });
+      }
+    }
+  });
 }
 
 function initTerminal() {
@@ -338,7 +333,7 @@ function initTopology() {
 
 function initProjects() {
   try {
-    new ProjectShowcase('projects-filter-bar', 'projects-grid');
+    new ProjectShowcase('projects-filter-bar', 'projects-grid', 'project-modal-root');
   } catch (err) {
     console.error('Failed to initialize project showcase:', err);
   }

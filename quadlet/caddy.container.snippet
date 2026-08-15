@@ -18,10 +18,10 @@ PublishPort=80:80/tcp
 PublishPort=443:443/tcp
 PublishPort=443:443/udp
 
-Volume=%h/caddy/conf:/etc/caddy:ro,Z
-Volume=%h/caddy/data:/data:Z
-Volume=%h/caddy/config:/config:Z
-Volume=%h/onekarlo-com:/srv/onekarlo-com:ro,Z
+Volume=/home/jk/caddy/conf:/etc/caddy:ro,Z
+Volume=/home/jk/caddy/data:/data:Z
+Volume=/home/jk/caddy/config:/config:Z
+Volume=/home/jk/onekarlo-com:/srv/onekarlo-com:ro,Z
 
 Exec=caddy run --config /etc/caddy/Caddyfile --adapter caddyfile
 LogDriver=journald

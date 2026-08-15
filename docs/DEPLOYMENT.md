@@ -1,140 +1,134 @@
-# Deployment Runbook
+# Deployment runbook
 
-deploy.sh builds the static site in Podman, verifies the Caddy target, syncs
-the generated public files, and reloads the already-validated Caddy
-configuration.
+`deploy.sh` is intentionally configured for one production VPS. The normal
+deployment command is:
 
-The script intentionally contains no production hostname, address, username,
-or host filesystem location. Set the target explicitly for every deployment.
+```bash
+bash ./deploy.sh
+```
 
-## Deployment contract
+Do not set `DEPLOY_TARGET`, `DEPLOY_ROOT`, or other deployment variables. The
+script already knows the SSH target and the paths for this server. If the
+repository is ever shared with someone who must not know the production
+endpoint, replace the fixed values in `deploy.sh` before sharing it.
 
-| Variable | Required | Meaning |
-| --- | --- | --- |
-| DEPLOY_TARGET | yes | local or an explicit SSH destination |
-| DEPLOY_ROOT | no | Host-side source of /srv/onekarlo-com; defaults to /srv/onekarlo-com |
-| CADDY_CONTAINER | no | Running container name; defaults to caddy |
-| CADDYFILE_PATH | no | Path inside the Caddy container; defaults to /etc/caddy/Caddyfile |
-| NODE_IMAGE | no | Pinned Node.js build image override |
-| CADDY_IMAGE | no | Caddy image used only for fragment formatting |
+## Fixed server contract
 
-DEPLOY_ROOT is a host path. /srv/onekarlo-com is the container-side mount
-destination and is not automatically created by the script.
+| Resource | Path or value |
+| --- | --- |
+| Caddy data directory | `/home/jk/caddy/` |
+| Host Caddyfile | `/home/jk/caddy/conf/Caddyfile` |
+| Rootless Quadlet | `/home/jk/.config/containers/systemd/caddy/caddy.container` |
+| Host web root | `/home/jk/onekarlo-com` |
+| Caddy config inside the container | `/etc/caddy/Caddyfile` |
+| Web root inside the container | `/srv/onekarlo-com` |
+| Container name | `caddy` |
+
+The host web root and the Caddy config directory must already exist. The
+script does not install the Quadlet, create production directories, or replace
+the complete operator-managed Caddyfile.
 
 ## Prerequisites
 
-Local workstation:
+The workstation needs:
 
-- Podman with a working machine or service;
-- rsync;
-- ssh for a remote target;
-- access to the configured Caddy host.
+- Podman with a running machine or service;
+- `rsync` and `ssh`;
+- network access to the VPS;
+- an SSH key or the VPS password.
 
-Remote host:
+The VPS needs rootless Podman, `rsync`, `awk`, a running `caddy` container, and
+the Quadlet at the fixed path above. The Caddy service should mount:
 
-- rootless Podman;
-- a running Caddy container managed by the operator's systemd/Quadlet setup;
-- a writable web-root directory mounted at /srv/onekarlo-com;
-- a Caddyfile that validates inside the running container.
+```ini
+Volume=/home/jk/caddy/conf:/etc/caddy:ro,Z
+Volume=/home/jk/onekarlo-com:/srv/onekarlo-com:ro,Z
+```
 
-The script does not install a Quadlet, create the Caddyfile, create the web
-root, or change unrelated services.
+Podman documents `~/.config/containers/systemd/` as a rootless Quadlet search
+path and recommends managing the generated service with user-level systemd:
+[Podman systemd units](https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html).
 
-## Local validation
+## What the script does
 
-Run the build and shell checks before any live sync:
+1. Reuses one SSH connection so a password prompt is not repeated for every
+   phase.
+2. Checks the fixed Caddy directory, Caddyfile, Quadlet, and web root.
+3. Confirms the running container maps the expected host paths.
+4. Expands the two absolute handler imports, then streams the Caddyfile to
+   `caddy validate --config -` inside the running container.
+5. Builds the site in a pinned Node.js Podman container.
+6. Syncs generated files to `/home/jk/onekarlo-com` while preserving unrelated
+   root entries and replacing stale hashed assets.
+7. Reloads Caddy only after validation and a successful sync.
 
-~~~bash
+Caddy documents `caddy validate` as a stronger check than config adaptation,
+because it also loads and provisions modules without starting the server. The
+script uses the documented Caddyfile adapter explicitly:
+[Caddy command line](https://caddyserver.com/docs/command-line).
+
+## Local checks
+
+Run these before committing changes:
+
+```bash
 podman info
 npm run build:podman
 bash -n deploy.sh
 git diff --check
-~~~
+```
 
-If the Caddy fragment changed, format-check it with the same Caddy image policy
-used by the deployment script. Review the complete host Caddyfile separately;
-the checked-in fragment is not a replacement configuration.
+Do not run `vite preview` as the production server. It is for local
+verification only. The production build guide is available in the
+[Vite documentation](https://vite.dev/guide/build).
 
-## First-time target verification
+## Troubleshooting
 
-Confirm the target's actual mount before choosing DEPLOY_ROOT:
+### Caddyfile permission denied
 
-~~~bash
-ssh deploy-user@deploy-host \
-  podman inspect --format '{{range .Mounts}}{{if eq .Destination "/srv/onekarlo-com"}}{{.Source}}{{end}}{{end}}' \
-  caddy
-~~~
+The live Caddyfile is bind-mounted read-only and may not be readable from the
+container's rootless user namespace, even when validation runs as container
+root. The script therefore reads the host file as the SSH user, expands the
+two absolute handler imports, and streams the complete configuration to Caddy
+through standard input. It uses the same approach during reload and does not
+weaken permissions on the active Caddy configuration.
 
-The printed source must exactly equal DEPLOY_ROOT. If it does not, stop and
-review the active Quadlet. Do not deploy to a guessed directory.
+If validation still fails, inspect the host file permissions and the active
+mounts. Do not make the complete Caddyfile world-readable just to bypass the
+check.
 
-For a reviewed Quadlet or Caddyfile change, reload the operator-managed user
-service first:
+### Mount mismatch
 
-~~~bash
-ssh deploy-user@deploy-host systemctl --user daemon-reload
-ssh deploy-user@deploy-host systemctl --user restart caddy.service
-~~~
+The script stops before syncing if the running container does not map:
 
-## Run the script
+```text
+/home/jk/onekarlo-com -> /srv/onekarlo-com
+/home/jk/caddy/conf -> /etc/caddy
+```
 
-For a configured local Caddy host:
+Review the active Quadlet, then reload the user service after an intentional
+change:
 
-~~~bash
-DEPLOY_TARGET=local \
-DEPLOY_ROOT="$HOME/onekarlo-com" \
-./deploy.sh
-~~~
+```bash
+systemctl --user daemon-reload
+systemctl --user restart caddy.service
+```
 
-For a configured remote host:
+### SSH password prompts
 
-~~~bash
-DEPLOY_TARGET=deploy-user@deploy-host \
-DEPLOY_ROOT=/srv/onekarlo-com \
-./deploy.sh
-~~~
+The script uses a temporary SSH control socket during the run. A password may
+be requested once. For regular deployments, configure an SSH key for the
+fixed host rather than putting a password in the script or an environment
+variable.
 
-## Safety behavior
+### Failed reload after sync
 
-Before synchronization, the script:
+The script reports this separately because the web files have already been
+synced. Review the Caddy journal, correct the configuration, validate it again,
+and reload the running service. Do not delete the web root as a recovery step.
 
-1. rejects empty or unsafe target/path values;
-2. checks Podman and rsync availability;
-3. checks that Caddy exists and is running;
-4. verifies the /srv/onekarlo-com mount mapping;
-5. validates the active Caddyfile;
-6. builds from an allowlisted source copy in a disposable Node.js container.
+## Related references
 
-The sync preserves unrelated entries at the web-root level. It replaces the
-generated assets/ tree with deletion enabled so stale hashed assets do not
-remain. The live bind-mounted directory is not an atomic whole-directory
-swap; schedule a maintenance window if an atomic cutover is required.
-
-Caddy reload occurs only after sync verification. If reload fails after files
-are synchronized, the script reports the state; inspect the Caddy logs and
-reload the validated configuration after fixing the cause.
-
-## Recovery
-
-1. Keep the last known-good Git commit and generated bundle available.
-2. Fix the Caddy configuration or target mapping before retrying.
-3. Re-run the script with the same explicit DEPLOY_TARGET and DEPLOY_ROOT.
-4. If the bundle itself is wrong, check out or restore the last known-good
-   commit in a separate working tree, build it, and deploy that output.
-
-Do not delete the shared web root to recover. The script is designed to
-preserve site-owned state outside generated public assets.
-
-## Guidance applied
-
-- [Vite production builds](https://vite.dev/guide/build) define the static
-  vite build output and distinguish vite preview from production serving.
-- [Podman Quadlet documentation](https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html)
-  defines rootless .container and .volume units and their systemd search
-  paths.
-- [GitHub deployment environments](https://docs.github.com/en/actions/concepts/workflows-and-actions/deployment-environments)
-  support branch restrictions, approvals, and environment-scoped secrets for
-  any future automated deployment workflow.
-- [GitHub secret guidance](https://docs.github.com/en/actions/concepts/security/secrets)
-  supports keeping credentials out of source and exposing them only where a
-  workflow explicitly requires them.
+- [Podman systemd units](https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html)
+- [Caddy command line](https://caddyserver.com/docs/command-line)
+- [Vite production build](https://vite.dev/guide/build)

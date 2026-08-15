@@ -1,4 +1,4 @@
-# onekarlo.com — Engineering Portfolio
+# onekarlo.com: Engineering Portfolio
 
 [![Node.js](https://img.shields.io/badge/Node.js-22%20container%20build-green.svg)](https://nodejs.org)
 [![Vite](https://img.shields.io/badge/Vite-6.4.3-646CFF.svg)](https://vite.dev)
@@ -81,39 +81,33 @@ npm run preview
 
 ## Deployment
 
-`deploy.sh` requires an explicit target. It never embeds a production host or
-filesystem location.
-
-For an already-configured local Caddy container:
+`deploy.sh` is configured for the production VPS in this repository. Run it
+directly:
 
 ```bash
-DEPLOY_TARGET=local \
-DEPLOY_ROOT="$HOME/onekarlo-com" \
-./deploy.sh
+bash ./deploy.sh
 ```
 
-For a configured remote host:
+The script expects the existing rootless Caddy service to use:
 
-```bash
-DEPLOY_TARGET=deploy-user@deploy-host \
-DEPLOY_ROOT=/srv/onekarlo-com \
-./deploy.sh
-```
+- `/home/jk/caddy/conf/Caddyfile` on the VPS;
+- `/home/jk/.config/containers/systemd/caddy/caddy.container`;
+- `/home/jk/onekarlo-com` as the host-side web root.
 
 The script:
 
-1. Validates Podman, rsync, and the target parameters.
+1. Validates Podman, rsync, and the fixed VPS paths.
 2. Verifies the Caddy container is running and maps `/srv/onekarlo-com` to
-   `DEPLOY_ROOT`.
+`/home/jk/onekarlo-com`.
 3. Validates the active Caddyfile before changing public files.
 4. Builds in an isolated, pinned Node.js container.
 5. Synchronizes generated files while preserving site-owned state and replacing
    versioned assets without stale files.
 6. Reloads the already-validated Caddy configuration.
 
-It does not install Quadlets, replace a complete Caddyfile, create directories,
-or deploy to an unspecified host. Read [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)
-before using a new target.
+It does not install Quadlets, replace a complete Caddyfile, or create missing
+production directories. Read [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) before
+changing the fixed target.
 
 The files under `quadlet/` are sanitized reference fragments. Podman Quadlets
 are declarative systemd units; review the [Podman Quadlet
@@ -146,6 +140,7 @@ for the complete review, commit, and push sequence.
 ## Further reading
 
 - [System architecture guide](ARCHITECTURE.md)
+- [UI and UX guide](docs/UI-UX-GUIDE.md)
 - [Contributing guide](CONTRIBUTING.md)
 - [Deployment runbook](docs/DEPLOYMENT.md)
 - [Content guide](docs/CONTENT-GUIDE.md)

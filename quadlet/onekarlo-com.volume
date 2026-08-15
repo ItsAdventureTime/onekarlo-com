@@ -1,8 +1,8 @@
 # Reference-only Quadlet volume definition for onekarlo.com.
 #
 # Production does not use this named volume. The live Caddy unit bind-mounts
-# %h/onekarlo-com:/srv/onekarlo-com:ro,Z, and deploy.sh synchronizes
-# DEPLOY_ROOT to that host directory. Do not install this unit unless the
+# /home/jk/onekarlo-com:/srv/onekarlo-com:ro,Z, and deploy.sh synchronizes
+# the fixed production web root to that host directory. Do not install this unit unless the
 # production storage design is deliberately changed and the Caddy mount plus
 # deployment workflow are updated together.
 # If intentionally used on another host, save it under the site's

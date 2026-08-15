@@ -1,107 +1,144 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-US">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="dark" />
-  <title>JK de Guzman | Full-Stack Product Engineer & Solutions Consultant</title>
-  <meta name="description" content="Juan Karlo 'JK' de Guzman | Full-Stack Product Engineer & Solutions Consultant. Designing, building, and operating purpose-built business applications, AI infrastructure, rootless Podman Quadlets, and technical operations." />
+  <title>JK de Guzman | Full-stack product engineer</title>
+  <meta name="description" content="Full-stack product engineer building workflow software, mobile tools, self-hosted AI systems, and the Linux platforms behind them." />
+
+  <!-- Canonical & Favicon -->
+  <link rel="canonical" href="https://onekarlo.com/" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23070a12' stroke='%2310b981' stroke-width='8'/><text x='50%' y='58%' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='900' font-size='42' fill='%2310b981'>JK</text></svg>" />
 
   <!-- OpenGraph Social Sharing -->
-  <meta property="og:title" content="JK de Guzman | Full-Stack Product Engineer & Solutions Consultant" />
-  <meta property="og:description" content="Full-Stack Product Engineer & Solutions Consultant building purpose-built business applications (PIMASCOR, Accustandard, Le Mans, Borgs Technology), AI infrastructure, and rootless Podman container platforms." />
+  <meta property="og:title" content="JK de Guzman | Full-stack product engineer" />
+  <meta property="og:description" content="A practical look at workflow software, mobile tools, self-hosted AI systems, and reliable Linux platforms." />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://onekarlo.com" />
+  <meta property="og:url" content="https://onekarlo.com/" />
+  <meta property="og:site_name" content="onekarlo.com" />
+  <meta property="og:image" content="https://onekarlo.com/og-image.svg" />
+  <meta property="og:image:alt" content="onekarlo.com engineering portfolio for JK de Guzman" />
 
-  <!-- LCP Optimization 1: Resource Preconnections & High Priority Preloads -->
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="JK de Guzman | Full-stack product engineer" />
+  <meta name="twitter:description" content="Building workflow software, mobile tools, self-hosted AI systems, and reliable Linux platforms." />
+  <meta name="twitter:image" content="https://onekarlo.com/og-image.svg" />
+  <meta name="twitter:image:alt" content="onekarlo.com engineering portfolio for JK de Guzman" />
+
+  <!-- Google Fonts Preconnect & Optimized Loading -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="preload" as="image" href="/gatewaysentry-logo.png" fetchpriority="high" />
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@600;700;800&display=swap" fetchpriority="high" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet" />
 
-  <!-- LCP Optimization 2: Critical Inline CSS for Instant 0ms First Contentful Paint -->
+  <!-- Critical Inline CSS for Instant First Contentful Paint -->
   <style>
-    :root { color-scheme: dark; --bg-dark: #060913; --text-primary: #f8fafc; }
+    :root { color-scheme: dark; --bg-dark: #070a12; --text-primary: #f8fafc; }
     html, body { background-color: var(--bg-dark); color: var(--text-primary); margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    .hero-title { font-size: clamp(2.5rem, 5.5vw, 4rem); letter-spacing: -0.03em; line-height: 1.15; text-wrap: balance; }
-    .hero-subtitle { font-size: 1.15rem; color: #94a3b8; line-height: 1.7; text-wrap: pretty; }
+    .hero-title { font-size: clamp(2.35rem, 4.8vw, 3.6rem); letter-spacing: -0.035em; line-height: 1.15; text-wrap: balance; }
+    .hero-subtitle { font-size: 1.1rem; color: #94a3b8; line-height: 1.7; text-wrap: pretty; }
   </style>
 </head>
 <body>
 
-  <!-- Background Cyber Particle Canvas -->
-  <canvas id="bg-canvas"></canvas>
+  <!-- Accessible Skip to Content Anchor -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
 
-  <!-- Interactive Cursor Radial Glow Follower -->
-  <div id="cursor-glow"></div>
+  <!-- Ambient Particle Canvas -->
+  <canvas id="bg-canvas" aria-hidden="true"></canvas>
 
-  <!-- Navigation Header (Mobile Responsive 3-slot flex layout) -->
+  <!-- Interactive Cursor Spotlight Follower -->
+  <div id="cursor-glow" aria-hidden="true"></div>
+
+  <!-- Navigation Header -->
   <header class="site-header" id="site-header">
     <div class="container nav-wrapper">
-      <a href="#" class="brand-logo" aria-label="onekarlo.com homepage">
+      <a href="#hero" class="brand-logo" aria-label="onekarlo.com home">
         <span class="dot"></span>
         <span class="brand-text-full">onekarlo.com</span>
         <span class="brand-text-short">onekarlo</span>
       </a>
       
-      <div class="nav-menu-container">
+      <nav class="nav-menu-container" aria-label="Main navigation">
         <ul class="nav-menu" id="nav-menu">
           <li><a href="#hero" class="nav-link active">Home</a></li>
           <li><a href="#projects" class="nav-link">Projects</a></li>
           <li><a href="#topology" class="nav-link">Topology</a></li>
           <li><a href="#philosophy" class="nav-link">Philosophy</a></li>
-          <!-- Dynamic Sliding Active Indicator Line -->
-          <div id="nav-slider" class="nav-slider-indicator"></div>
         </ul>
-      </div>
+        <div id="nav-slider" class="nav-slider-indicator" aria-hidden="true"></div>
+      </nav>
 
-      <!-- Direct LinkedIn Connect Action (Responsive Label) -->
-      <a href="https://www.linkedin.com/in/juan-karlo-de-guzman-51b79517/" target="_blank" rel="noopener" id="open-contact-btn" class="nav-btn">
+      <!-- Direct LinkedIn Connect Action -->
+      <a href="https://www.linkedin.com/in/juan-karlo-de-guzman-51b79517/" target="_blank" rel="noopener noreferrer" id="open-contact-btn" class="nav-btn">
         <span class="btn-text-full">Connect with me ↗</span>
         <span class="btn-text-short">Connect ↗</span>
       </a>
     </div>
   </header>
 
-  <main>
-    <!-- Hero & System Matrix Section (Immediate LCP Element Rendering) -->
+  <main id="main-content">
+    <!-- Hero & System Matrix Section -->
     <section id="hero" class="hero-section">
       <div class="container hero-grid">
-        <!-- Hero Text & Pillar Cards (Simultaneous Reveal) -->
+        <!-- Hero Text & Pillar Cards -->
         <div class="reveal-on-scroll">
-          <div class="hero-badge">
-            <span class="status-dot"></span>
-            Node Status: Fedora CoreOS Online & Rootless Podman
+          <div class="hero-telemetry-bar">
+            <div class="telemetry-item">
+              <span class="telemetry-dot"></span>
+              <span>Fedora CoreOS 40</span>
+            </div>
+            <span class="telemetry-divider">/</span>
+            <div class="telemetry-item">
+              <span>Rootless Podman</span>
+            </div>
+            <span class="telemetry-divider">/</span>
+            <div class="telemetry-item">
+              <span>Caddy HTTP/3</span>
+            </div>
           </div>
+
           <h1 class="hero-title">
-            Full-Stack Product Engineer & <span class="gradient-text">Solutions Consultant</span>
+            I build products for <span class="title-accent">real work</span>
           </h1>
+
           <p class="hero-subtitle">
-            <b>Juan Karlo "JK" de Guzman</b> | Full-Stack Product Engineer & Solutions Consultant. I design, build, deploy, and operate purpose-built web applications, self-hosted AI serving engines, rootless Podman Quadlets, and technical operations.
+            I design, build, and run workflow software, mobile tools, self-hosted AI services, and the Linux platforms behind them.
           </p>
 
-          <!-- 4 Pillar Cards (Simultaneous Appearance) -->
+          <!-- 4 Pillar Cards -->
           <div class="pillar-grid">
-            <div class="pillar-card biz" tabindex="0" role="article">
-              <div class="pillar-icon">🛠️</div>
-              <h3>Product Engineering</h3>
-              <p>Custom applications for logistics control, medical supply chain inventory, workshop service management, and business operations.</p>
+            <div class="pillar-card" tabindex="0" role="article">
+              <div class="pillar-icon-box">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+              </div>
+              <h3>Product engineering</h3>
+              <p>Workflow apps for audits, approvals, traceability, and day-to-day operations.</p>
             </div>
-            <div class="pillar-card ai" tabindex="0" role="article">
-              <div class="pillar-icon">🧠</div>
-              <h3>AI Infra & Serving</h3>
-              <p>PyTorch and vLLM model serving, Bifrost Go proxy routing, RunPod & Hyperstack GPU cloud instances, and big-AGI UI integration.</p>
+
+            <div class="pillar-card" tabindex="0" role="article">
+              <div class="pillar-icon-box">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a8 8 0 0 0-8 8c0 3.36 2.07 6.24 5 7.42V20a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-2.58c2.93-1.18 5-4.06 5-7.42a8 8 0 0 0-8-8z"></path><line x1="10" y1="14" x2="14" y2="14"></line></svg>
+              </div>
+              <h3>AI infrastructure and serving</h3>
+              <p>Model serving with PyTorch and vLLM, Go routing, GPU workloads, and practical evaluation.</p>
             </div>
-            <div class="pillar-card ops" tabindex="0" role="article">
-              <div class="pillar-icon">⚡</div>
-              <h3>Platform & Linux</h3>
-              <p>Fedora CoreOS host operations, rootless Podman Quadlets, SELinux policies, Caddy Web Server, and Bunny CDN edge caching.</p>
+
+            <div class="pillar-card" tabindex="0" role="article">
+              <div class="pillar-icon-box">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+              </div>
+              <h3>Platform engineering and Linux</h3>
+              <p>Immutable Linux hosts, rootless Podman, SELinux, Caddy, and reliable delivery.</p>
             </div>
-            <div class="pillar-card edu" tabindex="0" role="article">
-              <div class="pillar-icon">📐</div>
-              <h3>Systems & Ops</h3>
-              <p>Workflow discovery, business process mapping, SOP development, Notion workspaces, and managed infrastructure operations.</p>
+
+            <div class="pillar-card" tabindex="0" role="article">
+              <div class="pillar-icon-box">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+              </div>
+              <h3>Systems and operations</h3>
+              <p>I map workflows, write the runbooks, and keep production systems easy to operate.</p>
             </div>
           </div>
         </div>
@@ -113,17 +150,31 @@
       </div>
     </section>
 
-    <!-- Filterable Case Studies & Projects (Proof of Results First) -->
-    <section id="projects" class="section reveal-on-scroll">
+    <!-- Filterable Case Studies & Projects -->
+    <section id="projects" class="section projects-section reveal-on-scroll">
       <div class="container">
         <div class="section-header">
-          <span class="section-tag">Projects</span>
-          <h2 class="section-title">Active Projects & Systems</h2>
+          <span class="section-tag">Selected work, anonymized</span>
+          <h2 class="section-title">Active projects and systems</h2>
           <p class="section-description">
-            A look at current work across AI infrastructure, financial control applications, platform operations, startup SOPs, and language education.
+            These projects cover workflow software, mobile companions, and the systems behind them. The details stay focused on the work and the technical choices.
           </p>
         </div>
-        <div id="projects-filter-bar" class="projects-filter-bar">
+        <div class="projects-context" aria-label="Project focus areas">
+          <div class="projects-context-item">
+            <span class="projects-context-index tabular-nums">01</span>
+            <span>Workflow software</span>
+          </div>
+          <div class="projects-context-item">
+            <span class="projects-context-index tabular-nums">02</span>
+            <span>Mobile tools</span>
+          </div>
+          <div class="projects-context-item">
+            <span class="projects-context-index tabular-nums">03</span>
+            <span>AI and platform work</span>
+          </div>
+        </div>
+        <div id="projects-filter-bar" class="projects-filter-bar" role="group" aria-label="Project categories">
           <!-- Filter buttons rendered by src/projects.ts -->
         </div>
         <div id="projects-grid" class="projects-grid">
@@ -137,22 +188,22 @@
       <div class="container">
         <div class="section-header">
           <span class="section-tag">Infrastructure</span>
-          <h2 class="section-title">Production Server Topology</h2>
+          <h2 class="section-title">How the production stack fits together</h2>
           <p class="section-description">
-            Select any node below to inspect container mounts, systemd configurations, and active security controls.
+            Select a layer to see its role, runtime settings, and security controls.
           </p>
         </div>
         <div class="topology-wrapper">
-          <!-- Animated Data Flow Beam Indicator Bar -->
-          <div class="topology-beam-bar">
-            <div class="beam-step"><span>⚡ Anycast CDN</span> <span class="beam-arrow">➔</span></div>
-            <div class="beam-step"><span>🔒 Caddy Server</span> <span class="beam-arrow">➔</span></div>
-            <div class="beam-step"><span>🐧 Fedora CoreOS Host</span> <span class="beam-arrow">➔</span></div>
-            <div class="beam-step"><span>📦 Podman Engine</span> <span class="beam-arrow">➔</span></div>
-            <div class="beam-step"><span>🧠 AI Inference Core</span></div>
+          <!-- Data Flow Beam Indicator Bar -->
+          <div class="topology-beam-bar" aria-label="Data flow pipeline">
+            <div class="beam-step"><span>Anycast CDN</span> <span class="beam-arrow">➔</span></div>
+            <div class="beam-step"><span>Caddy TLS proxy</span> <span class="beam-arrow">➔</span></div>
+            <div class="beam-step"><span>Fedora CoreOS</span> <span class="beam-arrow">➔</span></div>
+            <div class="beam-step"><span>Podman Quadlets</span> <span class="beam-arrow">➔</span></div>
+            <div class="beam-step"><span>AI GPU node</span></div>
           </div>
 
-          <div id="topology-nodes" class="topology-nodes-grid">
+          <div id="topology-nodes" class="topology-nodes-grid" role="group" aria-label="Production topology layers">
             <!-- Rendered dynamically by src/topology.ts -->
           </div>
           <div id="topology-detail">
@@ -166,10 +217,10 @@
     <section id="philosophy" class="section reveal-on-scroll">
       <div class="container">
         <div class="section-header">
-          <span class="section-tag">Methodology</span>
-          <h2 class="section-title">Engineering Philosophy</h2>
+          <span class="section-tag">Working style</span>
+          <h2 class="section-title">How I work</h2>
           <p class="section-description">
-            Designing resilient production systems that perform under load through systematic log inspection, edge-case testing, and root-cause isolation.
+            I start with the logs, test the boundaries, and trace failures until the cause is clear.
           </p>
         </div>
         <div id="philosophy-pipeline" class="philosophy-pipeline">
@@ -179,13 +230,13 @@
     </section>
   </main>
 
+  <!-- Project Deep-Dive Modal Root -->
+  <div id="project-modal-root"></div>
+
   <!-- Footer -->
   <footer class="site-footer">
     <div class="container">
-      <a href="https://gatewaysentry.com" target="_blank" rel="noopener" class="footer-sponsor-link" aria-label="GatewaySentry High Performance Cloud & Dedicated Hosting Provider">
-        <img src="/gatewaysentry-logo.png" alt="GatewaySentry Hosting Provider" class="footer-sponsor-img" width="280" height="93" loading="eager" decoding="async" />
-      </a>
-      <p>© 2026 <b>Juan Karlo "JK" de Guzman</b>. Built with Vite and TypeScript. Hosted on the infrastructure provider above (discovered on <a href="https://lowendtalk.com" target="_blank" rel="noopener">LowEndTalk</a>), running Caddy Server inside rootless Podman Quadlets for container isolation on immutable Fedora CoreOS.</p>
+      <p>© 2026 <b>Juan Karlo "JK" de Guzman</b>. Built with TypeScript and Vite. Hosted with Caddy in rootless Podman on immutable Fedora CoreOS.</p>
     </div>
   </footer>
 

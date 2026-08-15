@@ -29,6 +29,23 @@ Framework and platform names may be used when they communicate a technical
 pattern and do not identify a client or private deployment. Prefer the generic
 description when a named tool adds no useful context.
 
+## Language and tone
+
+Write in English (US) with a professional, conversational voice. Keep copy
+short, direct, and easy to read.
+
+- Prefer concrete verbs such as `build`, `connect`, `track`, `check`, and
+  `deploy`.
+- Put the workflow or user need before the framework list.
+- Use sentence case for headings and labels.
+- Cut filler, vague praise, inflated claims, and repeated qualifiers.
+- Keep technical names when they add useful context, but do not let them carry
+  the sentence.
+- Read new copy aloud and proofread it before publishing.
+
+Apply the [UI and UX guide](UI-UX-GUIDE.md) for the broader layout, interaction,
+motion, and content review.
+
 ## Project entry model
 
 Project data lives in src/data.ts as PROJECTS_DATA. Each entry should keep

@@ -79,6 +79,20 @@ Use [WCAG 2.2](https://www.w3.org/TR/WCAG22/) as the accessibility reference
 and [the reduced-motion media feature guidance](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion)
 when changing interaction or animation behavior.
 
+## Responsive layout and content
+
+The page uses a wide shared canvas with fluid gutters on large screens. Text
+blocks keep a local readable measure, while the hero, project collection,
+topology inspector, and philosophy steps use CSS Grid to fill the available
+space. Section spacing is tokenized so adjacent sections do not create a large
+gap by stacking independent spacer values.
+
+Visible copy uses English (US), sentence case, short sentences, and concrete
+verbs. Project entries stay anonymized and focus on workflows, constraints,
+design choices, and safe technical details. See [the UI and UX guide](docs/UI-UX-GUIDE.md)
+and [the public content guide](docs/CONTENT-GUIDE.md) before changing layout or
+copy.
+
 ## Build boundary
 
 The production command is `vite build`, which creates a static bundle in
@@ -102,10 +116,10 @@ A rootless deployment convention is:
 [Container]
 Image=docker.io/library/caddy@sha256:98eb57d882ccd5213d1688764db10c1ca2c58a1ca3a6717a3411ad798f7a423a
 ContainerName=caddy
-Volume=%h/caddy/conf:/etc/caddy:ro,Z
-Volume=%h/caddy/data:/data:Z
-Volume=%h/caddy/config:/config:Z
-Volume=%h/onekarlo-com:/srv/onekarlo-com:ro,Z
+Volume=/home/jk/caddy/conf:/etc/caddy:ro,Z
+Volume=/home/jk/caddy/data:/data:Z
+Volume=/home/jk/caddy/config:/config:Z
+Volume=/home/jk/onekarlo-com:/srv/onekarlo-com:ro,Z
 Exec=caddy run --config /etc/caddy/Caddyfile --adapter caddyfile
 ```
 
@@ -145,18 +159,25 @@ successful verification.
 
 ## Deployment boundary
 
-`deploy.sh` requires:
+`deploy.sh` targets the configured VPS directly. Run it without environment
+variables or command-line arguments:
 
-- `DEPLOY_TARGET=local` for a configured local Caddy container, or an explicit
-  SSH destination for a remote host;
-- `DEPLOY_ROOT` equal to the host-side source of the `/srv/onekarlo-com` bind
-  mount;
-- a running Caddy container with a valid Caddyfile;
-- local Podman and rsync, plus SSH for remote targets.
+```bash
+bash ./deploy.sh
+```
 
-The script never installs Quadlets, replaces the complete Caddyfile, creates a
-production target, or embeds a host address. See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)
-for the runbook.
+The script expects the existing rootless Caddy service to use:
+
+- `/home/jk/caddy/conf/Caddyfile` on the host, mounted at
+  `/etc/caddy/Caddyfile` inside the container;
+- `/home/jk/.config/containers/systemd/caddy/caddy.container`;
+- `/home/jk/onekarlo-com` on the host, mounted at `/srv/onekarlo-com`.
+
+It expands the live Caddyfile's absolute handler imports, streams it through
+standard input to Caddy for validation, builds in Podman, syncs the generated
+site, and reloads Caddy only after validation. It does not install Quadlets,
+replace the complete Caddyfile, or create missing production paths.
+See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for the runbook.
 
 ## Change impact guide
 

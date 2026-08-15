@@ -8,6 +8,7 @@ authenticated GitHub HTTPS remote and, separately, to a configured web target.
 - [ ] Read the relevant source and documentation before editing.
 - [ ] Preserve unrelated user changes in a dirty working tree.
 - [ ] Review public copy against CONTENT-GUIDE.md.
+- [ ] Review layout and interaction changes against UI-UX-GUIDE.md.
 - [ ] Remove client/company names, locations, addresses, private paths,
       credentials, and identifying infrastructure details.
 - [ ] Confirm no generated dist/, dependency directory, or secret file is
@@ -22,8 +23,9 @@ bash -n deploy.sh
 git diff --check
 ~~~
 
-For UI changes, run npm run preview and verify desktop, mobile, keyboard,
-dialog focus, reduced motion, filters, and browser-console output.
+For UI changes, run the Podman preview and verify wide desktop, mobile,
+keyboard, dialog focus, reduced motion, filters, reflow, and browser-console
+output. Use the UI and UX guide as the review checklist.
 
 ## 3. GitHub HTTPS authentication
 
@@ -88,16 +90,17 @@ git log -1 --oneline
 ## 6. Optional web deployment
 
 GitHub synchronization and web deployment are separate operations. Only after
-the commit is on the intended branch and the target has been reviewed, run:
+the commit is on the intended branch and the fixed VPS has been reviewed, run:
 
 ~~~bash
-DEPLOY_TARGET=deploy-user@deploy-host \
-DEPLOY_ROOT=/srv/onekarlo-com \
-./deploy.sh
+bash ./deploy.sh
 ~~~
 
-Follow DEPLOYMENT.md. The deployment script uses SSH/rsync for the configured
-web host; that does not change the GitHub HTTPS requirement.
+Do not set deployment variables. The script owns the fixed SSH target and
+remote paths, validates Caddy before syncing, and reloads it only after a
+successful build and transfer. Follow [DEPLOYMENT.md](DEPLOYMENT.md) for the
+server contract and recovery steps. This does not change the GitHub HTTPS
+requirement.
 
 ## 7. Post-release record
 
