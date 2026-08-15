@@ -1,114 +1,156 @@
-# onekarlo.com — Personal Engineering & Systems Portfolio
+# onekarlo.com — Engineering Portfolio
 
-[![Node.js](https://img.shields.io/badge/Node.js-v26.5.0-green.svg)](https://nodejs.org)
-[![Vite](https://img.shields.io/badge/Vite-v6.4.3-646CFF.svg)](https://vitejs.dev)
-[![TypeScript](https://img.shields.io/badge/TypeScript-v5.7.3-3178C6.svg)](https://www.typescriptlang.org)
-[![Podman](https://img.shields.io/badge/Podman-Quadlets-892CA0.svg)](https://podman.io)
-[![Fedora CoreOS](https://img.shields.io/badge/OS-Fedora%20CoreOS-51A2DA.svg)](https://fedoraproject.org/coreos)
-[![Caddy](https://img.shields.io/badge/Caddy-HTTP%2F3-00B4D8.svg)](https://caddyserver.com)
-[![Signatures](https://img.shields.io/badge/Commits-1Password%20SSH%20Signed-blue.svg)](https://1password.com)
+[![Node.js](https://img.shields.io/badge/Node.js-22%20container%20build-green.svg)](https://nodejs.org)
+[![Vite](https://img.shields.io/badge/Vite-6.4.3-646CFF.svg)](https://vite.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9.3-3178C6.svg)](https://www.typescriptlang.org)
+[![Podman](https://img.shields.io/badge/Build-Podman-892CA0.svg)](https://podman.io)
 
-Welcome! This repository holds the source code and infrastructure configurations for [onekarlo.com](https://onekarlo.com), the personal website and systems engineering portfolio of **Juan Karlo "JK" de Guzman**.
+This repository contains the source for a personal engineering portfolio. It
+uses a small static frontend to explain active projects, systems work, and the
+operational thinking behind them.
 
-I built this site to showcase real-world production projects across remote operations management, Linux platform engineering, self-hosted AI model infrastructure, and educational program direction.
+Public project copy is intentionally anonymized. It describes capabilities,
+constraints, outcomes, and representative system patterns without naming
+clients, companies, locations, hosts, or private infrastructure.
 
----
+## What it demonstrates
 
-## 💡 How It Works
+- A data-driven **Active Projects & Systems** section with category filters,
+  accessible project details, and mobile-friendly cards.
+- A simulated terminal and topology inspector built with browser APIs.
+- A lightweight HTML, TypeScript, and CSS application with no frontend
+  framework runtime.
+- A containerized build and a guarded Caddy deployment path for static output.
 
-Instead of pulling in heavy JavaScript frameworks or complex single-page app routers for a personal portfolio, I kept things simple, fast, and durable:
+## Stack
 
-- **Framework-Agnostic Core**: Written in plain HTML5, Vanilla TypeScript, and modular CSS using design tokens. The entire site compiles into a lightweight ~10 kB HTML payload in under 150 milliseconds.
-- **Interactive Terminal & Topology Inspector**: Features a simulated CLI shell and a interactive server node inspector showing real-time traffic flow through CDN, reverse proxy, host OS, and container layers.
-- **Immutable Linux Host**: Hosted on Fedora CoreOS, an immutable Linux distribution where system updates apply atomically via `rpm-ostree`.
-- **Rootless Podman Quadlets**: Container services (like Caddy Server) run rootless using Podman Quadlets, which compile `.container` and `.volume` files directly into native systemd user services.
+| Layer | Tools |
+| --- | --- |
+| Frontend | HTML, TypeScript, Vite, modular CSS, design tokens |
+| Runtime | Native browser APIs and ES modules |
+| Build | Node.js 22 container, npm lockfile, Vite production build |
+| Delivery | Podman, rootless Caddy, systemd Quadlet references, rsync |
 
-For a deeper dive into the infrastructure setup, check out [ARCHITECTURE.md](ARCHITECTURE.md).
+## Repository map
 
----
+| Path | Purpose |
+| --- | --- |
+| `index.html` | Document shell, metadata, and section anchors |
+| `src/data.ts` | Profile, navigation, terminal, and topology data |
+| `src/projects.ts` | Active-project data and project rendering |
+| `src/styles/` | Tokens, layout, and component styles |
+| `public/` | Static assets and fallback pages |
+| `quadlet/` | Sanitized Caddy and Quadlet reference fragments |
+| `docs/` | Content, deployment, and release guides |
+| `deploy.sh` | Build, preflight, sync, and Caddy reload script |
 
-## 🛠️ Tech Stack at a Glance
+## Local development
 
-| Layer | Tools & Technologies |
-|---|---|
-| **Frontend** | HTML5, Vanilla TypeScript 5.7, Vite 6, Custom CSS Tokens, Glassmorphic UI |
-| **Container Engine** | Podman Rootless + Systemd Quadlets (`.container` & `.volume`) |
-| **Web Server** | Caddy Server (Rootless Podman container, automatic TLS 1.3, HTTP/3) |
-| **Host OS** | Fedora CoreOS (Immutable base, atomic `rpm-ostree` updates, SELinux Enforcing) |
-| **CDN & Edge** | Bunny.net Anycast CDN (DDoS mitigation, Brotli compression, Edge Caching) |
-| **AI Workloads** | Ubuntu Cloud GPUs (RunPod & Hyperstack), PyTorch, vLLM, Bifrost (Go proxy), big-AGI |
+Prerequisites:
 
----
+- Node.js compatible with the checked-in lockfile (the containerized build uses
+  Node.js 22).
+- npm.
+- Podman for the reproducible build and deployment workflows.
 
-## 🚀 Getting Started
+Install and start the development server:
 
-If you want to run or inspect the project locally, follow these steps.
-
-### Prerequisites
-- **Node.js**: v26+ (or Node LTS)
-- **npm**: v11+
-- **Podman**: (Optional, if testing containerized builds locally)
-
-### 1. Clone the repository
 ```bash
-git clone https://github.com/ItsAdventureTime/onekarlo-com.git
-cd onekarlo-com
-```
-
-### 2. Install dependencies
-```bash
-npm install
-```
-
-### 3. Start the dev server
-```bash
+npm ci
 npm run dev
 ```
-Open `http://localhost:3000` in your browser. Live reloading is enabled out of the box.
 
-### 4. Build for production
-### 3. Production & Transient Container Build
-All build compilations run strictly inside transient `node:alpine` containers via local macOS Podman (`podman machine start`). Containers automatically self-destruct (`--rm`) upon completion to prevent disk clutter and leftover build caches:
+Open `http://localhost:3000`. The development server supports live reload.
+
+Run a host-independent production build:
 
 ```bash
-# Ensure Podman machine is running
-podman machine start
-
-# Run transient containerized build (--rm self-destructs container on exit)
+podman info
 npm run build:podman
 ```
-The output compiles cleanly into `dist/`.
 
----
-
-## 📦 Deployment Pipeline
-
-Deployments run via `deploy.sh`. The script builds the static site inside a transient `node:alpine` Podman container (so your host machine doesn't need global dependencies installed) and syncs the compiled `dist/` directory to the server over SSH using `rsync`:
+The build copies only the required source inputs into a disposable container,
+then writes the production bundle to `dist/`. For a local production preview:
 
 ```bash
-# Single-line containerized build & sync
-podman run --rm -e NPM_CONFIG_UPDATE_NOTIFIER=false -v "$PWD:/app:z" -w /app docker.io/library/node:alpine sh -c "npm install --no-audit --no-fund --no-notice --quiet && npm run build" && \
-rsync -avz --delete --exclude='.DS_Store' --exclude='._*' --exclude='.Spotlight-V100' --exclude='.Trashes' "dist/" gatewaysentry:/home/jk/onekarlo-com/
+npm run preview
 ```
 
----
+`vite preview` is for verification, not a production web server. See the
+[Vite production build guide](https://vite.dev/guide/build).
 
-## 🛡️ Privacy, Local Git & Remote GitHub CLI (HTTPS)
+## Deployment
 
-- **Local Git Commits & 1Password SSH Signing**: Local commits use `git` CLI with 1Password SSH key agent signing (`op-ssh-sign`).
-- **Remote GitHub CLI Integration (`gh`)**: Remote repository management and verification use **GitHub Official CLI (`gh`)** over **HTTPS** (`https://github.com/ItsAdventureTime/onekarlo-com.git`), authenticated by default.
-- **Anonymized Server Host Configuration**: Production SSH host details use local SSH config aliases (`gatewaysentry`), ensuring no private IP addresses or personal credentials leak into public commits.
-- **Private Documentation**: Personal context prompts and internal operational notes are excluded from version control via `.gitignore`.
+`deploy.sh` requires an explicit target. It never embeds a production host or
+filesystem location.
 
----
+For an already-configured local Caddy container:
 
-## 🤝 Contributing & Feedback
+```bash
+DEPLOY_TARGET=local \
+DEPLOY_ROOT="$HOME/onekarlo-com" \
+./deploy.sh
+```
 
-Got questions or suggestions? Take a look at [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on opening issues, running test audits, or submitting pull requests.
+For a configured remote host:
 
----
+```bash
+DEPLOY_TARGET=deploy-user@deploy-host \
+DEPLOY_ROOT=/srv/onekarlo-com \
+./deploy.sh
+```
 
-## 📄 License
+The script:
 
-© 2026 **Juan Karlo "JK" de Guzman**. Source code released under the MIT License.
-Hosting provided by [GatewaySentry](https://gatewaysentry.com).
+1. Validates Podman, rsync, and the target parameters.
+2. Verifies the Caddy container is running and maps `/srv/onekarlo-com` to
+   `DEPLOY_ROOT`.
+3. Validates the active Caddyfile before changing public files.
+4. Builds in an isolated, pinned Node.js container.
+5. Synchronizes generated files while preserving site-owned state and replacing
+   versioned assets without stale files.
+6. Reloads the already-validated Caddy configuration.
+
+It does not install Quadlets, replace a complete Caddyfile, create directories,
+or deploy to an unspecified host. Read [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)
+before using a new target.
+
+The files under `quadlet/` are sanitized reference fragments. Podman Quadlets
+are declarative systemd units; review the [Podman Quadlet
+documentation](https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html)
+and merge references into the operator's complete unit rather than replacing
+an existing multi-service configuration.
+
+## Content and privacy
+
+Use [docs/CONTENT-GUIDE.md](docs/CONTENT-GUIDE.md) when changing the Active
+Projects & Systems section. Keep public entries capability-focused and remove
+client names, company names, geographic locations, IP addresses, usernames,
+filesystem paths, credentials, and identifying project metadata.
+
+## GitHub HTTPS workflow
+
+GitHub authentication and Git credential setup use the official GitHub CLI:
+
+```bash
+gh auth status --hostname github.com
+gh auth setup-git --hostname github.com
+git remote get-url origin
+```
+
+The `origin` URL must use `https://github.com/...`, never SSH. Local commits
+remain local Git operations; authenticated remote transport is provided by
+`gh auth setup-git`. See [docs/RELEASE-CHECKLIST.md](docs/RELEASE-CHECKLIST.md)
+for the complete review, commit, and push sequence.
+
+## Further reading
+
+- [System architecture guide](ARCHITECTURE.md)
+- [Contributing guide](CONTRIBUTING.md)
+- [Deployment runbook](docs/DEPLOYMENT.md)
+- [Content guide](docs/CONTENT-GUIDE.md)
+- [Release checklist](docs/RELEASE-CHECKLIST.md)
+
+## License
+
+© 2026 Juan Karlo de Guzman. Source code is released under the MIT License.

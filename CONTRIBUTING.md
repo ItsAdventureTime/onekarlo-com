@@ -1,79 +1,110 @@
 # Contributing Guidelines
 
-Thanks for taking the time to check out this project! While `onekarlo.com` is primarily my personal portfolio, I welcome bug reports, performance suggestions, and ideas for improvements.
+This is a small personal portfolio, so changes should stay focused, readable,
+and easy to verify. Contributions are welcome for accessibility, performance,
+content quality, and maintainability improvements.
 
----
+## Before changing the site
 
-## 🛠️ Development Workflow
+Read:
 
-### 1. Environment Setup
-Make sure you have Node.js (v26 or LTS) and npm installed.
+- [README.md](README.md) for project commands and scope.
+- [ARCHITECTURE.md](ARCHITECTURE.md) for the runtime and delivery model.
+- [docs/CONTENT-GUIDE.md](docs/CONTENT-GUIDE.md) before editing public project
+  copy.
+
+Do not add client names, company names, geographic locations, IP addresses,
+usernames, private paths, credentials, or identifying project metadata to public
+source or documentation.
+
+## Development workflow
 
 ```bash
-# Clone the repository
-git clone https://github.com/ItsAdventureTime/onekarlo-com.git
-cd onekarlo-com
-
-# Install dependencies
-npm install
-```
-
-### 2. Local Development
-Run the Vite development server:
-```bash
+npm ci
 npm run dev
 ```
-Open `http://localhost:3000` to preview your changes in real time.
 
-### 3. Code Standards & File Structure
-- Keep components framework-agnostic. Logic lives in `src/`, with styles broken into `tokens.css`, `main.css`, and `components.css`.
-- Use TypeScript type annotations for data models and state objects.
-- Maintain dark-mode design tokens defined in `src/styles/tokens.css`.
+The app is a Vite-powered TypeScript site. Keep business/content data in the
+existing data modules, keep shared values in the design tokens, and preserve
+the current separation between structure, behavior, and styles.
 
----
+Prefer small, composable changes. Do not introduce a frontend framework or a
+new dependency for behavior that browser APIs already support.
 
-## 🧪 Testing & Quality Audits
+## Verification
 
-Before submitting changes or opening a pull request, run the automated quality audit script to verify UI/UX and performance rules:
-
-```bash
-# Build the production bundle
-npm run build
-
-# Run the quality audit test suite
-node scratch/test_audit.js
-```
-
-### What the Audit Verifies:
-1. **Em Dash Audit**: Checks that no raw em dashes are present in user-facing content.
-2. **Contrast Audit**: Ensures navigation buttons maintain high contrast (`#040812 !important`).
-3. **Mobile GPU Optimization**: Confirms touch devices disable heavy mouse cursor glow followers.
-4. **Mobile Topology Grid**: Verifies 2-column mobile layout rules.
-5. **Terminal Output Formatting**: Checks `white-space: pre-wrap` formatting for multi-line CLI text.
-6. **LCP Performance Audit**: Ensures font preloads include `fetchpriority="high"`.
-
----
-
-## 🔐 Local Git Commits & GitHub CLI HTTPS Integration
-
-Local commits use local `git` with 1Password SSH signature verification. Remote repository operations use **GitHub Official CLI (`gh`)** over **HTTPS** protocol (`https://github.com/ItsAdventureTime/onekarlo-com.git`), which is authenticated by default:
+Run the reproducible build before opening a change:
 
 ```bash
-# 1. Local commit via git (signed via 1Password SSH key agent)
-git add .
-git commit -S -m "feat: your feature description"
-
-# 2. Remote repository verification and sync via GitHub CLI (HTTPS)
-gh auth status
-gh repo view ItsAdventureTime/onekarlo-com
+podman info
+npm run build:podman
 ```
 
----
+For visual or interaction changes, preview the production output:
 
-## 📬 Reporting Issues
+```bash
+npm run preview
+```
 
-If you notice a bug, broken link, or accessibility issue:
-1. Open an issue on [GitHub Issues](https://github.com/ItsAdventureTime/onekarlo-com/issues).
-2. Describe the problem, include your browser/OS version, and attach a screenshot if applicable.
+Check the affected flow at desktop and narrow mobile widths. At minimum,
+verify keyboard focus, Enter/Space activation, Escape-to-close behavior,
+visible focus styles, reduced-motion behavior, readable contrast, and the
+absence of browser-console errors. `vite preview` is a verification server,
+not a production server.
 
-Thank you for helping keep this project clean, fast, and accessible!
+When documentation or shell scripts change, also run:
+
+```bash
+git diff --check
+bash -n deploy.sh
+```
+
+Use [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for deployment-specific checks.
+
+## Content changes
+
+Project entries should communicate:
+
+1. The capability or system problem.
+2. The role or workflow supported.
+3. The representative technical pattern.
+4. The observable outcome or operating constraint.
+
+Use generic descriptions. The public site is a portfolio, not a client case
+study or infrastructure inventory.
+
+## GitHub HTTPS workflow
+
+Local commits use Git. GitHub authentication and the Git credential helper use
+the official `gh` CLI over HTTPS:
+
+```bash
+gh auth status --hostname github.com
+gh auth setup-git --hostname github.com
+git remote get-url origin
+```
+
+Confirm `origin` begins with `https://github.com/` before any push. Create a
+focused local commit, then push the current branch through that authenticated
+HTTPS helper:
+
+```bash
+git add path/to/changed-files
+git commit -m "docs: update project and deployment guides"
+git push origin HEAD
+```
+
+Do not put tokens, private URLs, server addresses, or generated output in a
+commit. Use [docs/RELEASE-CHECKLIST.md](docs/RELEASE-CHECKLIST.md) for the
+complete release sequence.
+
+## Reporting issues
+
+Open an issue with:
+
+- A short description of the problem.
+- Browser, operating system, and viewport details when relevant.
+- Reproduction steps.
+- A screenshot or console error with secrets and private identifiers removed.
+
+Please avoid attaching client material or internal infrastructure details.

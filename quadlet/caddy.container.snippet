@@ -1,29 +1,29 @@
+# Sanitized reference fragment for a rootless Caddy deployment.
+#
+# This is not a complete production unit. Review the active unit before
+# changing or installing this reference. Preserve any operator-managed
+# networks, mounts, dependencies, and service settings for other sites.
+
 [Unit]
 Description=Caddy rootless edge web server
 
 [Container]
 ContainerName=caddy
-
-Image=docker.io/library/caddy:alpine
+Image=docker.io/library/caddy@sha256:98eb57d882ccd5213d1688764db10c1ca2c58a1ca3a6717a3411ad798f7a423a
 AutoUpdate=registry
 
-# Caddy's own edge network and application proxy networks.
 Network=caddy.network
 
 PublishPort=80:80/tcp
 PublishPort=443:443/tcp
 PublishPort=443:443/udp
 
-# Caddy configuration and persistent state.
-Volume=/home/jk/caddy/conf:/etc/caddy:ro,Z
-Volume=/home/jk/caddy/data:/data:Z
-Volume=/home/jk/caddy/config:/config:Z
-
-# Static website volume mount.
-Volume=/home/jk/onekarlo-com:/srv/onekarlo-com:ro,Z
+Volume=%h/caddy/conf:/etc/caddy:ro,Z
+Volume=%h/caddy/data:/data:Z
+Volume=%h/caddy/config:/config:Z
+Volume=%h/onekarlo-com:/srv/onekarlo-com:ro,Z
 
 Exec=caddy run --config /etc/caddy/Caddyfile --adapter caddyfile
-
 LogDriver=journald
 
 [Service]

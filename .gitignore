@@ -27,6 +27,8 @@ yarn-error.log*
 !README.md
 !ARCHITECTURE.md
 !CONTRIBUTING.md
+!docs/
+!docs/*.md
 
 # Track durable Serena project memories
 !.serena/memories/

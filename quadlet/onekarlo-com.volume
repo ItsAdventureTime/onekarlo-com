@@ -1,6 +1,13 @@
-# Quadlet Volume snippet for onekarlo.com
-# Saved under ~/.config/containers/systemd/onekarlo-com/onekarlo-com.volume
+# Reference-only Quadlet volume definition for onekarlo.com.
+#
+# Production does not use this named volume. The live Caddy unit bind-mounts
+# %h/onekarlo-com:/srv/onekarlo-com:ro,Z, and deploy.sh synchronizes
+# DEPLOY_ROOT to that host directory. Do not install this unit unless the
+# production storage design is deliberately changed and the Caddy mount plus
+# deployment workflow are updated together.
+# If intentionally used on another host, save it under the site's
+# Quadlet directory, for example
+# ~/.config/containers/systemd/onekarlo-com/onekarlo-com.volume.
 
 [Volume]
-User=jk
-Group=jk
+# No production Caddy service references this named volume.

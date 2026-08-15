@@ -1,15 +1,17 @@
 # ============================================================
-# CSP for onekarlo.com
-# ============================================================
-
-(onekarlo_portfolio_csp) {
-	header {
-		>Content-Security-Policy "default-src 'none'; script-src 'self'; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-attr 'none'; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data:; connect-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'; worker-src 'none'; manifest-src 'self'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests"
-	}
-}
-
-# ============================================================
-# onekarlo.com
+# Sanitized merge fragment for an operator-managed Caddyfile.
+#
+# This is not a complete production Caddyfile. The active Caddyfile is the
+# source of truth and may already declare common_security,
+# inline_style_static_csp, same_origin_web_csp, onekarlo_portfolio_csp,
+# and private_noindex. Do not replace that file or blindly append this
+# fragment; merge one reviewed onekarlo.com site block into the existing
+# declaration instead.
+#
+# The existing onekarlo_portfolio_csp policy includes style-src
+# 'self' 'unsafe-inline' https://fonts.googleapis.com and
+# style-src-attr 'none'. The complete policy is validated in the Caddy
+# container; deploy.sh only checks this fragment's standalone formatting.
 # ============================================================
 
 onekarlo.com {
@@ -25,5 +27,7 @@ onekarlo.com {
 	@versioned_assets path /assets/*
 	header @versioned_assets >Cache-Control "public, max-age=31536000, immutable"
 
-	file_server
+	file_server {
+		hide data config storage database db uploads backups .git .env* *.db *.sqlite *.sqlite3
+	}
 }
