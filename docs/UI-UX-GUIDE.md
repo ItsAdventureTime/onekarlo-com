@@ -53,6 +53,8 @@ sentence around them when the wording feels stiff.
 - Return focus to the element that opened a dialog.
 - Keep Escape and backdrop dismissal available for dialogs.
 - Keep visible focus styles and avoid controls that are too close together.
+- Give configuration labels and copy actions a visible flex gap; let long labels
+  wrap instead of creating horizontal overflow.
 - Honor `prefers-reduced-motion` for decorative motion and transitions.
 
 Use [WCAG 2.2](https://www.w3.org/TR/WCAG22/) as the accessibility baseline.
@@ -62,12 +64,16 @@ interactive targets should meet the [minimum target-size guidance](https://www.w
 ## Motion and visual language
 
 The site uses small opacity, transform, and border transitions. Motion should
-explain state changes or provide feedback, not delay access to content.
+explain state changes or provide feedback, not delay access to content. The copy
+configuration action uses Motion's vanilla `animate` API for a brief success
+cue; it skips that cue when `prefers-reduced-motion: reduce` is active.
 
 SmoothUI is a useful reference for restrained motion, responsive components,
-and accessible interaction. The portfolio remains a vanilla TypeScript and CSS
-site, so it uses the reference ideas without adding SmoothUI or a new runtime
-dependency. See the [SmoothUI project](https://github.com/educlopez/smoothui).
+and accessible interaction. SmoothUI itself is built with React, Tailwind CSS,
+Shadcn/ui, and Motion; this portfolio remains a vanilla TypeScript and CSS site.
+It borrows the interaction principles and uses Motion's DOM API without adding
+the SmoothUI component stack. See the [SmoothUI project](https://github.com/educlopez/smoothui)
+and [Motion's JavaScript animation guide](https://motion.dev/docs/animate).
 
 ## Review checklist
 
@@ -80,4 +86,5 @@ dependency. See the [SmoothUI project](https://github.com/educlopez/smoothui).
 - [ ] Public project copy contains no client, company, location, or private
       infrastructure identifiers.
 - [ ] Keyboard, dialog, filter, focus, and reduced-motion behavior still work.
+- [ ] Configuration labels and copy actions remain separated and wrap cleanly.
 - [ ] The Podman production build passes before release.

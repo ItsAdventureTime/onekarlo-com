@@ -4,6 +4,7 @@
 
 import { TOPOLOGY_NODES, TopoNode } from './data';
 import { copyText } from './clipboard';
+import { animate } from 'motion/mini';
 
 export class TopologyInspector {
   private gridEl: HTMLElement;
@@ -120,6 +121,9 @@ export class TopologyInspector {
             if (feedback) {
               feedback.textContent = copied ? 'Configuration copied' : 'Could not copy the configuration. Select it and copy it manually';
               feedback.className = `topo-copy-feedback ${copied ? 'is-success' : 'is-error'}`;
+            }
+            if (copied && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+              animate(target, { scale: [1, 1.04, 1] }, { duration: 0.3, ease: 'easeOut' });
             }
             window.setTimeout(() => {
               if (copyButtonLabel) copyButtonLabel.textContent = 'Copy configuration';
