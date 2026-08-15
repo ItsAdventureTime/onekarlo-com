@@ -9,6 +9,7 @@ import { PHILOSOPHY_STEPS } from './data';
 import { TerminalEmulator, triggerHackerScramble } from './terminal';
 import { TopologyInspector } from './topology';
 import { ProjectShowcase } from './projects';
+import { animate } from 'motion/mini';
 
 function prefersReducedMotion(): boolean {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -26,6 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initTerminal();
   initTopology();
   initProjects();
+  initSectionStaggeredReveal();
+  initHashNavigation();
   initKeyboardShortcuts();
 });
 
@@ -159,6 +162,40 @@ function initNavSlider() {
 }
 
 /* --------------------------------------------------------------------------
+   Stable Initial Hash Position
+   -------------------------------------------------------------------------- */
+function initHashNavigation() {
+  const hash = window.location.hash;
+  if (!hash || !hash.startsWith('#')) return;
+
+  let targetId: string;
+  try {
+    targetId = decodeURIComponent(hash.slice(1));
+  } catch {
+    return;
+  }
+
+  const target = document.getElementById(targetId);
+  if (!target) return;
+
+  const alignTarget = () => {
+    target.scrollIntoView({ behavior: 'auto', block: 'start' });
+  };
+
+  // Dynamic project and philosophy content changes document height during
+  // startup. Re-align after two frames so a direct section link lands reliably.
+  const settleLayout = () => {
+    requestAnimationFrame(() => requestAnimationFrame(alignTarget));
+  };
+
+  if ('fonts' in document) {
+    document.fonts.ready.then(settleLayout);
+  } else {
+    settleLayout();
+  }
+}
+
+/* --------------------------------------------------------------------------
    Background Ambient Cyber Particles (Optimized with Visibility Pause)
    -------------------------------------------------------------------------- */
 function initBgCanvas() {
@@ -277,6 +314,43 @@ function initScrollReveal() {
   }, { threshold: 0.08 });
 
   reveals.forEach(el => observer.observe(el));
+}
+
+/* --------------------------------------------------------------------------
+   SmoothUI-inspired Section Stagger (vanilla DOM + Motion)
+   -------------------------------------------------------------------------- */
+function initSectionStaggeredReveal() {
+  const groups = document.querySelectorAll<HTMLElement>('[data-reveal-stagger]');
+  if (!groups.length) return;
+
+  // The composition pattern is borrowed from SmoothUI, but stays framework-free:
+  // Motion handles transform/opacity only, while CSS keeps content visible without JS.
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+
+      const group = entry.target as HTMLElement;
+      observer.unobserve(group);
+
+      if (prefersReducedMotion()) return;
+
+      Array.from(group.children).forEach((child, index) => {
+        const element = child as HTMLElement;
+
+        // Set styles only when the group is ready to animate; never reserve layout space.
+        element.style.opacity = '0';
+        element.style.transform = 'translateY(14px)';
+
+        animate(
+          element,
+          { opacity: [0, 1], transform: ['translateY(14px)', 'translateY(0px)'] },
+          { duration: 0.42, delay: index * 0.07, ease: 'easeOut' }
+        );
+      });
+    });
+  }, { threshold: 0.16, rootMargin: '0px 0px -8% 0px' });
+
+  groups.forEach(group => observer.observe(group));
 }
 
 /* --------------------------------------------------------------------------

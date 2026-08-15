@@ -231,8 +231,6 @@ input[type="text"] {
   padding-block: var(--section-space);
   position: relative;
   z-index: 2;
-  content-visibility: auto;
-  contain-intrinsic-size: 0 650px;
 }
 
 #hero, .hero-section {

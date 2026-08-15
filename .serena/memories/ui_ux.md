@@ -7,5 +7,8 @@
 - Keep project content anonymized; describe workflows, constraints, design choices, and safe technical details.
 - Preserve keyboard filters, labeled dialogs, focus return, visible focus, and reduced-motion behavior.
 - Keep topology configuration labels and copy actions separated with a flex gap; allow long labels to wrap without horizontal overflow.
-- Use Motion's vanilla DOM animation only for brief copy-success feedback; skip it when reduced motion is requested.
+- Keep page-level sections visible; never use synthetic intrinsic section heights as scroll placeholders.
+- Use `data-reveal-stagger="smoothui-inspired"` for the vanilla DOM + Motion section reveal pattern; content must remain visible without JavaScript and the enhancement must bypass reduced motion.
+- Use Motion's vanilla DOM animation for brief feedback and restrained section reveals; skip it when reduced motion is requested.
+- Re-align direct hash links after startup layout settles because project and philosophy content render during initialization.
 - Read `docs/UI-UX-GUIDE.md` for the maintained layout, copy, interaction, and review checklist.

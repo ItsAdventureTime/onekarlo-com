@@ -74,7 +74,10 @@ SmoothUI is a useful reference for restrained motion, responsive components,
 and accessible interaction. SmoothUI itself is built with React, Tailwind CSS,
 Shadcn/ui, and Motion; this portfolio remains a vanilla TypeScript and CSS site.
 It borrows the interaction principles and uses Motion's DOM API without adding
-the SmoothUI component stack. See the [SmoothUI project](https://github.com/educlopez/smoothui)
+the SmoothUI component stack. Section groups marked with
+`data-reveal-stagger="smoothui-inspired"` use a short Motion-powered
+transform/opacity cascade; the content remains visible without JavaScript and
+the cascade is skipped for reduced-motion users. See the [SmoothUI project](https://github.com/educlopez/smoothui)
 and [Motion's JavaScript animation guide](https://motion.dev/docs/animate).
 
 ## Review checklist
@@ -88,5 +91,9 @@ and [Motion's JavaScript animation guide](https://motion.dev/docs/animate).
 - [ ] Public project copy contains no client, company, location, or private
       infrastructure identifiers.
 - [ ] Keyboard, dialog, filter, focus, and reduced-motion behavior still work.
+- [ ] Section roots stay visible; no synthetic intrinsic height creates a blank
+      scroll placeholder.
+- [ ] SmoothUI-inspired section reveals animate transform/opacity only and
+      bypass reduced motion.
 - [ ] Configuration labels and copy actions remain separated and wrap cleanly.
 - [ ] The Podman production build passes before release.
