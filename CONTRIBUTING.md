@@ -10,6 +10,8 @@ Read:
 
 - [README.md](README.md) for project commands and scope.
 - [ARCHITECTURE.md](ARCHITECTURE.md) for the runtime and delivery model.
+- [docs/LOCAL-DEVELOPMENT.md](docs/LOCAL-DEVELOPMENT.md) for the sandbox
+  workflow.
 - [docs/CONTENT-GUIDE.md](docs/CONTENT-GUIDE.md) before editing public project
   copy.
 
@@ -20,8 +22,10 @@ source or documentation.
 ## Development workflow
 
 ```bash
-npm ci
-npm run dev
+jk-sbx-project ensure
+jk-sbx-project exec npm ci
+jk-sbx-project exec-bg npm run dev
+jk-sbx-project publish 3000
 ```
 
 The app is a Vite-powered TypeScript site. Keep business/content data in the
@@ -33,17 +37,18 @@ new dependency for behavior that browser APIs already support.
 
 ## Verification
 
-Run the reproducible build before opening a change:
+Run the reproducible build inside the Docker Sandbox before opening a change:
 
 ```bash
-podman info
-npm run build:podman
+jk-sbx-project exec npm run build
 ```
 
-For visual or interaction changes, preview the production output:
+For visual or interaction changes, preview the production output in the
+sandbox:
 
 ```bash
-npm run preview
+jk-sbx-project exec-bg npm run preview
+jk-sbx-project publish 3000
 ```
 
 Check the affected flow at desktop and narrow mobile widths. At minimum,
@@ -61,6 +66,20 @@ bash -n deploy.sh
 
 Use [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for deployment-specific checks.
 
+## Documentation discipline
+
+Keep the guides synchronized with the implementation. When a change affects
+commands, build inputs, deployment paths, security headers, accessibility
+behavior, or release procedure:
+
+- update the relevant guide in the same change;
+- remove instructions that no longer match the repository;
+- keep private infrastructure details and credentials out of public docs; and
+- record the documentation review in the release checklist.
+
+If no guide needs changing, confirm that the existing documentation still
+matches the revised behavior before committing.
+
 ## Content changes
 
 Project entries should communicate:
@@ -73,7 +92,7 @@ Project entries should communicate:
 Use generic descriptions. The public site is a portfolio, not a client case
 study or infrastructure inventory.
 
-## GitHub HTTPS workflow
+## GitHub HTTPS and signed-commit workflow
 
 Local commits use Git. GitHub authentication and the Git credential helper use
 the official `gh` CLI over HTTPS:
@@ -81,22 +100,27 @@ the official `gh` CLI over HTTPS:
 ```bash
 gh auth status --hostname github.com
 gh auth setup-git --hostname github.com
+gh config get git_protocol
 git remote get-url origin
 ```
 
 Confirm `origin` begins with `https://github.com/` before any push. Create a
-focused local commit, then push the current branch through that authenticated
-HTTPS helper:
+focused signed local commit, then push the current branch through that
+authenticated HTTPS helper:
 
 ```bash
 git add path/to/changed-files
-git commit -m "docs: update project and deployment guides"
+git commit -S -m "docs: update project and deployment guides"
 git push origin HEAD
+git log -1 --format='%h %G? %GS %s'
 ```
 
-Do not put tokens, private URLs, server addresses, or generated output in a
-commit. Use [docs/RELEASE-CHECKLIST.md](docs/RELEASE-CHECKLIST.md) for the
-complete release sequence.
+The signature status must be `G` (good). If local signing is not configured,
+stop and configure a GitHub-supported GPG, SSH, or S/MIME signing method
+before committing. Do not put tokens, private URLs, server addresses, or
+generated output in a commit. Use
+[docs/RELEASE-CHECKLIST.md](docs/RELEASE-CHECKLIST.md) for the complete release
+sequence.
 
 ## Reporting issues
 

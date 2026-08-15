@@ -19,6 +19,20 @@ hostnames, addresses, and private infrastructure details.
 5. **Reproducible delivery**: builds run from the lockfile in a pinned Node.js
    container; production delivery validates the target before synchronization.
 
+## Execution planes
+
+The project separates control, local execution, and production delivery:
+
+| Plane | Responsibility |
+| --- | --- |
+| macOS control plane | Source edits, Git, `gh`, SSH, and deployment orchestration |
+| Docker Sandbox | Local npm, TypeScript, Vite build, preview, and UI verification |
+| VPS production plane | Rootless Podman, Quadlet-managed Caddy, and static files |
+
+Use `jk-sbx-project exec` for local project commands. The deployment script is
+an operator boundary: it performs its pinned container build and SSH transfer
+only when an intentional production deployment is requested.
+
 ## Runtime flow
 
 ```text
@@ -96,13 +110,15 @@ copy.
 ## Build boundary
 
 The production command is `vite build`, which creates a static bundle in
-`dist/`. The repository also exposes `npm run build:podman`; it copies only
-the package manifests, Vite entry files, `src/`, and `public/` into an isolated
-Node.js container before running `npm ci` and the production build.
+`dist/`. Local source validation runs inside the Docker Sandbox with
+`jk-sbx-project exec npm run build`. The deployment script separately copies
+only the package manifests, Vite entry files, `src/`, and `public/` into an
+isolated pinned Node.js container before running `npm ci` and the production
+build for the VPS transfer.
 
-The build boundary excludes `.git`, host sockets, credentials, and unrelated
-workspace files. `vite preview` may verify `dist/` locally but is not a
-production server.
+The deployment build boundary excludes `.git`, host sockets, credentials, and
+unrelated workspace files. `vite preview` may verify `dist/` inside the
+sandbox but is not a production server.
 
 ## Caddy and Quadlet contract
 
@@ -163,7 +179,7 @@ successful verification.
 variables or command-line arguments:
 
 ```bash
-bash ./deploy.sh
+./deploy.sh
 ```
 
 The script expects the existing rootless Caddy service to use:

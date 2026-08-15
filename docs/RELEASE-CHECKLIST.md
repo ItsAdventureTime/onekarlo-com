@@ -13,17 +13,21 @@ authenticated GitHub HTTPS remote and, separately, to a configured web target.
       credentials, and identifying infrastructure details.
 - [ ] Confirm no generated dist/, dependency directory, or secret file is
       staged.
+- [ ] Update the relevant guide when commands, build inputs, deployment paths,
+      security behavior, accessibility behavior, or release procedure changed.
+- [ ] Confirm [LOCAL-DEVELOPMENT.md](LOCAL-DEVELOPMENT.md) still matches the
+      Docker Sandbox workflow.
 
 ## 2. Local verification
 
 ~~~bash
-podman info
-npm run build:podman
+jk-sbx-project ensure
+jk-sbx-project exec npm run build
 bash -n deploy.sh
 git diff --check
 ~~~
 
-For UI changes, run the Podman preview and verify wide desktop, mobile,
+For UI changes, run the sandbox preview and verify wide desktop, mobile,
 keyboard, dialog focus, reduced motion, filters, reflow, and browser-console
 output. Use the UI and UX guide as the review checklist.
 
@@ -34,6 +38,7 @@ Use the official GitHub CLI for authentication and Git credential setup:
 ~~~bash
 gh auth status --hostname github.com
 gh auth setup-git --hostname github.com
+gh config get git_protocol
 git remote get-url origin
 ~~~
 
@@ -44,8 +49,21 @@ https://github.com/<owner>/<repository>.git
 ~~~
 
 Stop if origin uses git@github.com: or another SSH URL. Do not print or
-commit an access token. gh auth setup-git configures Git to use the
-authenticated GitHub CLI credential helper.
+commit an access token. `gh auth setup-git` configures Git to use the
+authenticated GitHub CLI credential helper over HTTPS; it does not sign local
+commits.
+
+Before staging, confirm local signing is enabled:
+
+~~~bash
+git config --get commit.gpgsign
+git config --get gpg.format
+~~~
+
+The first command must return `true` and the second must identify a configured
+GitHub-supported signing format. See the [GitHub commit-signing
+guide](https://docs.github.com/en/authentication/managing-commit-signature-verification/signing-commits)
+if signing is not configured.
 
 ## 4. Review and commit
 
@@ -63,8 +81,12 @@ git diff --cached
 Commit locally with a focused message:
 
 ~~~bash
-git commit -m "docs: update project and deployment guides"
+git commit -S -m "docs: update project and deployment guides"
+git log -1 --format='%h %G? %GS %s'
 ~~~
+
+The signature status must be `G` (good). Do not continue with an unsigned
+commit.
 
 If local signing is configured, let the local Git configuration perform the
 signature. Never add private key material to the repository.
@@ -87,13 +109,16 @@ gh repo view --json nameWithOwner,defaultBranchRef,url
 git log -1 --oneline
 ~~~
 
+Confirm the pushed commit is signed in the GitHub commit view before treating
+the release as complete.
+
 ## 6. Optional web deployment
 
 GitHub synchronization and web deployment are separate operations. Only after
 the commit is on the intended branch and the fixed VPS has been reviewed, run:
 
 ~~~bash
-bash ./deploy.sh
+./deploy.sh
 ~~~
 
 Do not set deployment variables. The script owns the fixed SSH target and

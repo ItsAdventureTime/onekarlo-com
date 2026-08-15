@@ -4,8 +4,12 @@
 deployment command is:
 
 ```bash
-bash ./deploy.sh
+./deploy.sh
 ```
+
+The repository tracks the executable bit. If a checkout loses that mode, use
+`bash ./deploy.sh` temporarily, then restore it with `chmod +x deploy.sh`
+before committing.
 
 Do not set `DEPLOY_TARGET`, `DEPLOY_ROOT`, or other deployment variables. The
 script already knows the SSH target and the paths for this server. If the
@@ -32,7 +36,10 @@ the complete operator-managed Caddyfile.
 
 The workstation needs:
 
-- Podman with a running machine or service;
+- Docker Desktop (or a compatible Docker Engine) and `jk-sbx-project` for
+  local validation;
+- Podman with a running machine or service for the deployment script's pinned
+  production build;
 - `rsync` and `ssh`;
 - network access to the VPS;
 - an SSH key or the VPS password.
@@ -72,11 +79,16 @@ script uses the documented Caddyfile adapter explicitly:
 Run these before committing changes:
 
 ```bash
-podman info
-npm run build:podman
+jk-sbx-project ensure
+jk-sbx-project exec npm run build
 bash -n deploy.sh
 git diff --check
 ```
+
+The deployment script still checks `podman info` and performs its isolated
+Node.js container build when it is run. That production-transfer boundary is
+separate from normal local source validation. See
+[LOCAL-DEVELOPMENT.md](LOCAL-DEVELOPMENT.md) for sandbox commands.
 
 Do not run `vite preview` as the production server. It is for local
 verification only. The production build guide is available in the
@@ -132,3 +144,4 @@ and reload the running service. Do not delete the web root as a recovery step.
 - [Podman systemd units](https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html)
 - [Caddy command line](https://caddyserver.com/docs/command-line)
 - [Vite production build](https://vite.dev/guide/build)
+- [Local development guide](LOCAL-DEVELOPMENT.md)

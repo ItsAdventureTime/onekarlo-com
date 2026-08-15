@@ -4,7 +4,10 @@
 - `tsconfig.json`: `noEmit`, `strict`, `noUnusedLocals`, `noUnusedParameters`; only `src` is included.
 - No application framework/dependency layer: features use browser DOM APIs and local TypeScript modules.
 - Entry: `src/main.ts`; static shell: `index.html`; global/component styles: `src/styles/`.
-- Build and delivery: `npm run build:podman`, rootless Podman/Caddy references,
-  and `deploy.sh` with explicit target and mount preflight.
+- Local execution: Docker Sandbox via `jk-sbx-project`; use sandbox commands for
+  npm, TypeScript, Vite build, preview, and UI verification.
+- Build and delivery: `deploy.sh` performs the pinned Node.js container build,
+  then uses rootless Podman/Caddy references with explicit target and mount
+  preflight.
 - Public content: anonymized project capabilities in `src/data.ts`; privacy and
   release guidance lives in `docs/CONTENT-GUIDE.md` and `docs/RELEASE-CHECKLIST.md`.

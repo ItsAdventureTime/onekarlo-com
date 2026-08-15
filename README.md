@@ -29,6 +29,7 @@ clients, companies, locations, hosts, or private infrastructure.
 | Frontend | HTML, TypeScript, Vite, modular CSS, design tokens |
 | Runtime | Native browser APIs and ES modules |
 | Build | Node.js 22 container, npm lockfile, Vite production build |
+| Local execution | Docker Sandbox via `jk-sbx-project` |
 | Delivery | Podman, rootless Caddy, systemd Quadlet references, rsync |
 
 ## Repository map
@@ -48,45 +49,51 @@ clients, companies, locations, hosts, or private infrastructure.
 
 Prerequisites:
 
-- Node.js compatible with the checked-in lockfile (the containerized build uses
-  Node.js 22).
-- npm.
-- Podman for the reproducible build and deployment workflows.
+- Docker Desktop (or a compatible Docker Engine).
+- The `jk-sbx-project` command-line wrapper.
+- Podman, `rsync`, and `ssh` only when using the production deployment script.
 
-Install and start the development server:
+The repository's local execution plane is a deterministic Docker Sandbox. From
+the project root:
 
 ```bash
-npm ci
-npm run dev
+jk-sbx-project ensure
+jk-sbx-project exec npm ci
+jk-sbx-project exec-bg npm run dev
+jk-sbx-project publish 3000
 ```
 
 Open `http://localhost:3000`. The development server supports live reload.
 
-Run a host-independent production build:
+Run a host-independent production build in the sandbox:
 
 ```bash
-podman info
-npm run build:podman
+jk-sbx-project exec npm run build
 ```
 
-The build copies only the required source inputs into a disposable container,
-then writes the production bundle to `dist/`. For a local production preview:
+For a local production preview, stop the dev server first, then run:
 
 ```bash
-npm run preview
+jk-sbx-project exec-bg npm run preview
+jk-sbx-project publish 3000
 ```
 
 `vite preview` is for verification, not a production web server. See the
 [Vite production build guide](https://vite.dev/guide/build).
+See [docs/LOCAL-DEVELOPMENT.md](docs/LOCAL-DEVELOPMENT.md) for the complete
+sandbox workflow.
 
 ## Deployment
 
 `deploy.sh` is configured for the production VPS in this repository. Run it
-directly:
+directly from the project root:
 
 ```bash
-bash ./deploy.sh
+./deploy.sh
 ```
+
+If a checkout has lost the executable bit, use `bash ./deploy.sh` once and
+restore the mode before committing with `chmod +x deploy.sh`.
 
 The script expects the existing rootless Caddy service to use:
 
@@ -122,20 +129,24 @@ Projects & Systems section. Keep public entries capability-focused and remove
 client names, company names, geographic locations, IP addresses, usernames,
 filesystem paths, credentials, and identifying project metadata.
 
-## GitHub HTTPS workflow
+## GitHub HTTPS and signed-commit workflow
 
 GitHub authentication and Git credential setup use the official GitHub CLI:
 
 ```bash
 gh auth status --hostname github.com
 gh auth setup-git --hostname github.com
+gh config get git_protocol
 git remote get-url origin
 ```
 
 The `origin` URL must use `https://github.com/...`, never SSH. Local commits
-remain local Git operations; authenticated remote transport is provided by
-`gh auth setup-git`. See [docs/RELEASE-CHECKLIST.md](docs/RELEASE-CHECKLIST.md)
-for the complete review, commit, and push sequence.
+remain local Git operations; authenticated HTTPS transport is provided by
+`gh auth setup-git`. `gh` does not sign a local commit for you, so keep Git
+commit signing enabled and verify the resulting signature before pushing. See
+the [GitHub commit-signing guide](https://docs.github.com/en/authentication/managing-commit-signature-verification/signing-commits)
+and [docs/RELEASE-CHECKLIST.md](docs/RELEASE-CHECKLIST.md) for the complete
+review, commit, and push sequence.
 
 ## Further reading
 
@@ -143,6 +154,7 @@ for the complete review, commit, and push sequence.
 - [UI and UX guide](docs/UI-UX-GUIDE.md)
 - [Contributing guide](CONTRIBUTING.md)
 - [Deployment runbook](docs/DEPLOYMENT.md)
+- [Local development guide](docs/LOCAL-DEVELOPMENT.md)
 - [Content guide](docs/CONTENT-GUIDE.md)
 - [Release checklist](docs/RELEASE-CHECKLIST.md)
 
