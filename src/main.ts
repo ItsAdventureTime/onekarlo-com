@@ -196,7 +196,7 @@ function initHashNavigation() {
 }
 
 /* --------------------------------------------------------------------------
-   Background Ambient Cyber Particles (Optimized with Visibility Pause)
+   Background Ambient Cyber Particles (Optimized with Visibility Pause & RAF Tracking)
    -------------------------------------------------------------------------- */
 function initBgCanvas() {
   const canvas = document.getElementById('bg-canvas') as HTMLCanvasElement;
@@ -208,17 +208,37 @@ function initBgCanvas() {
   let width = canvas.width = window.innerWidth;
   let height = canvas.height = window.innerHeight;
   let isRunning = !prefersReducedMotion();
+  let rafId: number | null = null;
 
   window.addEventListener('resize', () => {
     width = canvas.width = window.innerWidth;
     height = canvas.height = window.innerHeight;
-  });
+  }, { passive: true });
+
+  const stopLoop = () => {
+    if (rafId !== null) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+  };
+
+  const startLoop = () => {
+    stopLoop();
+    if (isRunning) {
+      rafId = requestAnimationFrame(animate);
+    }
+  };
 
   // Pause animation when tab is inactive to save battery and GPU cycles
   document.addEventListener('visibilitychange', () => {
-    isRunning = !document.hidden && !prefersReducedMotion();
-    if (isRunning) {
-      requestAnimationFrame(animate);
+    const shouldRun = !document.hidden && !prefersReducedMotion();
+    if (shouldRun !== isRunning) {
+      isRunning = shouldRun;
+      if (isRunning) {
+        startLoop();
+      } else {
+        stopLoop();
+      }
     }
   });
 
@@ -247,7 +267,10 @@ function initBgCanvas() {
   }
 
   function animate() {
-    if (!isRunning) return;
+    if (!isRunning) {
+      rafId = null;
+      return;
+    }
 
     ctx!.clearRect(0, 0, width, height);
 
@@ -265,10 +288,10 @@ function initBgCanvas() {
       ctx!.fill();
     }
 
-    requestAnimationFrame(animate);
+    rafId = requestAnimationFrame(animate);
   }
 
-  if (isRunning) animate();
+  if (isRunning) startLoop();
 }
 
 /* --------------------------------------------------------------------------
@@ -361,7 +384,7 @@ function initPhilosophyPipeline() {
   if (!container) return;
 
   container.innerHTML = PHILOSOPHY_STEPS.map(step => `
-    <div class="pipeline-step" tabindex="0" role="article">
+    <div class="pipeline-step">
       <div class="step-header-row">
         <span class="step-num tabular-nums">0${step.stepNum}</span>
         <span class="step-phase">${step.phase}</span>

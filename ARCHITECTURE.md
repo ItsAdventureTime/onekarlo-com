@@ -78,21 +78,29 @@ representative systems, a status, and optional detail content. Rendering,
 filter state, dialog state, focus return, and empty-state messaging remain in
 the same feature boundary.
 
-## Interaction and accessibility
+## Interaction, accessibility, and memory safety
 
-The project collection uses semantic controls rather than clickable containers:
+The interface applies modern web standards and WCAG 2.2 AA accessibility:
 
 - category filters expose their pressed state with `aria-pressed`;
-- project cards are keyboard-operable and open a labeled dialog;
+- project cards are keyboard-operable and open an accessible, labeled dialog;
 - Escape closes the dialog and focus returns to the triggering card;
-- visible focus styles remain available for keyboard navigation;
-- pointer-follow decoration is nonessential and disabled for reduced-motion
-  users;
-- the layout collapses to a single readable column on narrow viewports.
+- focus trap and `inert` background handling isolate active modal interactions;
+- non-actionable static cards avoid `tabindex="0"` to eliminate redundant keyboard tab stops;
+- interactive targets satisfy the minimum 44px touch target guidelines;
+- contrast ratios for body, dimmed, and terminal text meet WCAG AA standards (≥4.5:1);
+- visible `:focus-visible` styles remain distinct for keyboard navigation;
+- canvas particle loops manage `requestAnimationFrame` with explicit handle tracking,
+  teardown on tab inactivity, and reduced-motion bypass to eliminate CPU/memory leaks;
+- pointer-follow decoration is nonessential and disabled for reduced-motion users.
 
-Use [WCAG 2.2](https://www.w3.org/TR/WCAG22/) as the accessibility reference
-and [the reduced-motion media feature guidance](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion)
-when changing interaction or animation behavior.
+## Core Web Vitals & LCP performance
+
+The site implements modern CSS and loading optimizations to minimize Largest Contentful Paint:
+
+- `font-size-adjust: from-font` metric stabilization prevents layout reflows during web font swaps;
+- `content-visibility: auto` with `contain-intrinsic-size` defers rendering of offscreen sections (`#projects`, `#topology`, `#philosophy`), minimizing initial layout calculation and main-thread blocking;
+- hero section styles are inlined in `<head>` for zero-delay First Contentful Paint.
 
 ## Responsive layout and content
 

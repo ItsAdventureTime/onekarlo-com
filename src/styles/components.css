@@ -1742,3 +1742,47 @@
 .site-footer a:hover {
   color: var(--accent-secondary);
 }
+
+/* --------------------------------------------------------------------------
+   Touch Target & Mobile Accessibility Enhancements (WCAG 2.5.5 / 2.5.8)
+   -------------------------------------------------------------------------- */
+@media (pointer: coarse), (max-width: 768px) {
+  .nav-link {
+    min-height: 44px;
+    padding-inline: 1rem;
+  }
+
+  .nav-btn {
+    min-height: 44px;
+    padding-inline: 1.25rem;
+  }
+
+  .filter-btn {
+    min-height: 44px;
+    padding: 0.6rem 1.15rem;
+  }
+
+  .chip-btn {
+    min-height: 38px;
+    padding: 0.35rem 0.75rem;
+  }
+
+  .terminal-tab {
+    min-height: 44px;
+    padding-inline: 1rem;
+  }
+
+  .project-deepdive-btn {
+    min-height: 44px;
+    padding: 0.5rem 1rem;
+  }
+
+  .topo-config-copy,
+  .terminal-copy-btn,
+  .modal-close-btn,
+  .modal-action-btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+

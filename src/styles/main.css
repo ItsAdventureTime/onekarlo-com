@@ -18,6 +18,7 @@ html {
   scroll-behavior: smooth;
   scroll-padding-top: 90px;
   font-family: var(--font-body);
+  font-size-adjust: var(--font-size-adjust, from-font);
   background-color: var(--bg-dark);
   color: var(--text-primary);
   line-height: 1.6;
@@ -231,10 +232,13 @@ input[type="text"] {
   padding-block: var(--section-space);
   position: relative;
   z-index: 2;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
 }
 
 #hero, .hero-section {
   content-visibility: visible !important;
+  contain-intrinsic-size: none !important;
   padding-block-start: clamp(7.5rem, 12vh, 10.5rem);
   padding-block-end: clamp(1.75rem, 2.5vw, 3.5rem);
 }

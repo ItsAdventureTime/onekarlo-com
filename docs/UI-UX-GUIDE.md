@@ -54,14 +54,24 @@ sentence around them when the wording feels stiff.
   description.
 - Return focus to the element that opened a dialog.
 - Keep Escape and backdrop dismissal available for dialogs.
+- Isolate modal overlays with `inert` on background elements while open.
+- Avoid `tabindex="0"` on static non-interactive cards to preserve a clean Tab flow.
 - Keep visible focus styles and avoid controls that are too close together.
+- Maintain minimum touch target dimensions (at least 44×44px on coarse pointers / mobile).
+- Ensure all text and UI elements meet WCAG AA contrast standards (≥4.5:1 for body/terminal text).
 - Give configuration labels and copy actions a visible flex gap; let long labels
   wrap instead of creating horizontal overflow.
-- Honor `prefers-reduced-motion` for decorative motion and transitions.
+- Honor `prefers-reduced-motion` for decorative motion, canvas loops, and transitions.
 
 Use [WCAG 2.2](https://www.w3.org/TR/WCAG22/) as the accessibility baseline.
 The site should reflow without two-dimensional scrolling at narrow widths, and
 interactive targets should meet the [minimum target-size guidance](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum).
+
+## Performance and Core Web Vitals (LCP)
+
+- Use `font-size-adjust: from-font` on base typography to ensure fallback font metric parity and eliminate layout shifts during web font swaps.
+- Apply `content-visibility: auto` with appropriate `contain-intrinsic-size` to below-the-fold sections (`.projects-section`, `#topology`, `#philosophy`) to defer offscreen layout and paint costs.
+- Inline critical viewport styles in `<head>` to maintain instant First Contentful Paint.
 
 ## Motion and visual language
 

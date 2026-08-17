@@ -18,6 +18,11 @@ clients, companies, locations, hosts, or private infrastructure.
 - A data-driven **Active Projects & Systems** section with category filters,
   accessible project details, and mobile-friendly cards.
 - A simulated terminal and topology inspector built with browser APIs.
+- Core Web Vitals & LCP performance optimization (`font-size-adjust` metric stabilization,
+  `content-visibility: auto` layout deferral, and zero-runtime CSS).
+- WCAG 2.2 AA accessibility (streamlined keyboard tab flow, high-contrast tokens,
+  and minimum 44px touch targets).
+- Memory-safe client lifecycles with guarded `requestAnimationFrame` and event cleanup.
 - A lightweight HTML, TypeScript, and CSS application with no frontend
   framework runtime.
 - A sandboxed build and a guarded Caddy deployment path for static output.
