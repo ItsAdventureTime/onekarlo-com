@@ -17,8 +17,7 @@ hostnames, addresses, and private infrastructure details.
    language. Identifying client, company, location, host, and credential data
    stays out of the public repository.
 5. **Reproducible delivery**: builds run from the lockfile inside the project
-   Docker Sandbox; production delivery validates the target before
-   synchronization.
+   Docker Sandbox; Wrangler uploads only the verified static output.
 
 ## Execution planes
 
@@ -28,11 +27,11 @@ The project separates control, local execution, and production delivery:
 | --- | --- |
 | macOS control plane | Source edits, Git, `gh`, SSH, and deployment orchestration |
 | Docker Sandbox | Local npm, TypeScript, Vite build, preview, and UI verification |
-| VPS production plane | Rootless Podman, Quadlet-managed Caddy, and static files |
+| Cloudflare production plane | Workers Static Assets, edge cache, and static files |
 
-Use `jk-sbx-project exec` for local project commands. The deployment script is
-an operator boundary: it builds inside the initialized sandbox, then performs
-only the intentional SSH transfer and remote Caddy reload.
+Use `jk-sbx-project exec` for local project commands. Production deployment
+uploads the built static directory through Wrangler; the Mac mini is not a
+public request origin.
 
 ## Runtime flow
 
@@ -40,11 +39,8 @@ only the intentional SSH transfer and remote Caddy reload.
 [ Browser ]
     │ HTTPS
     ▼
-[ Optional edge/CDN ]
+[ Cloudflare Workers Static Assets ]
     │ static request
-    ▼
-[ Caddy in rootless Podman ]
-    │ read-only site mount
     ▼
 [ dist/ ]
     ├── index.html
@@ -53,7 +49,7 @@ only the intentional SSH transfer and remote Caddy reload.
     └── public fallback files
 ```
 
-Caddy serves the generated static directory. The site has no server-side
+Cloudflare serves the generated static directory. The site has no server-side
 application, runtime database, or API dependency in the browser.
 
 ## Frontend modules
@@ -120,14 +116,14 @@ copy.
 
 The production command is `vite build`, which creates a static bundle in
 `dist/`. Local source validation and deployment builds run inside the Docker
-Sandbox with `npm ci` followed by `npm run build`. The deployment script then
-copies only the generated `dist/` output to the VPS.
+Sandbox with `npm ci` followed by `npm run build`. Wrangler uploads only the
+generated `dist/` output to Cloudflare.
 
 The deployment artifact boundary is `dist/`: `.git`, credentials, and
-unrelated workspace files are never synchronized by `deploy.sh`. `vite
-preview` may verify `dist/` inside the sandbox but is not a production server.
+unrelated workspace files are never uploaded. `vite preview` may verify
+`dist/` inside the sandbox but is not a production server.
 
-## Caddy and Quadlet contract
+## Legacy Caddy and Quadlet contract
 
 The files under `quadlet/` are sanitized reference fragments. They are not a
 complete production installation and must not replace an operator's existing
@@ -181,6 +177,34 @@ container, synchronizes generated public files, and reloads only after a
 successful verification.
 
 ## Deployment boundary
+
+`wrangler.jsonc` configures a static-assets-only Worker. It intentionally has
+no `main` script or asset binding: matching assets are served directly by
+Cloudflare, and unmatched paths return the top-level `404.html`. The Vite
+`public/_headers` file preserves the security and cache headers that Caddy
+previously supplied.
+
+Deploy with the Docker Sandbox:
+
+```bash
+jk-sbx-project exec npm run build
+docker compose run --rm build npm run verify:workers
+docker compose run --rm build npm run preview:workers
+docker compose run --rm build npm run deploy:workers
+```
+
+Authenticate with `docker compose run --rm build ./node_modules/.bin/wrangler login --device` because the
+sandbox cannot receive Wrangler's default `localhost:8976` OAuth callback.
+
+The Compose build service mounts `.wrangler` as ephemeral tmpfs and stores
+Wrangler credentials in the external `onekarlo-com-wrangler-auth` volume. The
+former prevents stale temporary bundle paths; the latter survives container
+recreation and `docker compose down -v`.
+
+See [the Workers deployment guide](docs/CLOUDFLARE-WORKERS.md) for
+authentication and custom-domain cutover steps.
+
+### Legacy VPS deployment
 
 `deploy.sh` targets the configured VPS directly. Run it without environment
 variables or command-line arguments:

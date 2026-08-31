@@ -21,9 +21,9 @@ authenticated GitHub HTTPS remote and, separately, to a configured web target.
 ## 2. Local verification
 
 ~~~bash
-jk-sbx-project ensure
-jk-sbx-project run 'npm ci --no-audit --no-fund --no-update-notifier && npm run build'
-bash -n deploy.sh
+docker compose config
+docker compose run --rm build
+docker compose run --rm build npm run verify:workers
 git diff --check
 ~~~
 
@@ -53,17 +53,10 @@ commit an access token. `gh auth setup-git` configures Git to use the
 authenticated GitHub CLI credential helper over HTTPS; it does not sign local
 commits.
 
-Before staging, confirm local signing is enabled:
-
-~~~bash
-git config --get commit.gpgsign
-git config --get gpg.format
-~~~
-
-The first command must return `true` and the second must identify a configured
-GitHub-supported signing format. See the [GitHub commit-signing
-guide](https://docs.github.com/en/authentication/managing-commit-signature-verification/signing-commits)
-if signing is not configured.
+HTTPS authentication configured by `gh auth setup-git` is separate from commit
+signing. Use a GPG, SSH, or S/MIME signer only when one is deliberately
+configured; do not substitute a broken signer or claim that an HTTPS commit is
+signed.
 
 ## 4. Review and commit
 
@@ -81,15 +74,11 @@ git diff --cached
 Commit locally with a focused message:
 
 ~~~bash
-git commit -S -m "docs: update project and deployment guides"
-git log -1 --format='%h %G? %GS %s'
+git commit -m "docs: update project and deployment guides"
 ~~~
 
-The signature status must be `G` (good). Do not continue with an unsigned
-commit.
-
-If local signing is configured, let the local Git configuration perform the
-signature. Never add private key material to the repository.
+If a working signing method is configured, use `git commit -S` and verify its
+status. Never add private key material to the repository.
 
 ## 5. Push over authenticated HTTPS
 
@@ -112,26 +101,27 @@ git log -1 --oneline
 Confirm the pushed commit is signed in the GitHub commit view before treating
 the release as complete.
 
-## 6. Optional web deployment
+## 6. Cloudflare Workers deployment
 
 GitHub synchronization and web deployment are separate operations. Only after
-the commit is on the intended branch and the fixed VPS has been reviewed, run:
+the commit is on the intended branch, deploy the verified static build:
 
 ~~~bash
-./deploy.sh
+docker compose run --rm build npm run preview:workers
+docker compose run --rm build npm run deploy:workers
 ~~~
 
-Do not set deployment variables. The script builds in the initialized project
-Docker Sandbox, owns the fixed SSH target and remote paths, validates the VPS
-Caddy container before syncing, and reloads it only after a successful build
-and transfer. Follow [DEPLOYMENT.md](DEPLOYMENT.md) for the server contract and
-recovery steps. This does not change the GitHub HTTPS requirement.
+Verify the returned `workers.dev` URL before attaching or changing the custom
+domain. Follow [CLOUDFLARE-WORKERS.md](CLOUDFLARE-WORKERS.md) for authentication,
+custom-domain cutover, and recovery steps. This does not change the GitHub HTTPS
+requirement.
 
 ## 7. Post-release record
 
 - [ ] Record the commit SHA and target used.
 - [ ] Confirm the public page, project filters, dialogs, and fallback page.
-- [ ] Confirm Caddy reload succeeded and no private files are publicly served.
+- [ ] Confirm the Workers deployment served the expected static assets and no
+      private files are publicly available.
 - [ ] Record any warning or follow-up instead of silently bypassing a failed
       preflight.
 

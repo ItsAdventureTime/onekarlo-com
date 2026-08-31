@@ -1,7 +1,7 @@
-# Deployment runbook
+# Legacy VPS Caddy deployment runbook
 
-`deploy.sh` is intentionally configured for one production VPS. The normal
-deployment command is:
+Cloudflare Workers is the production deployment path. This runbook is retained
+only as a rollback procedure for the former VPS Caddy target. Its command is:
 
 ```bash
 ./deploy.sh

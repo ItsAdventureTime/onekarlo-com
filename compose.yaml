@@ -1,0 +1,40 @@
+name: onekarlo-com
+
+services:
+  build:
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+      - type: tmpfs
+        target: /app/.wrangler
+      - wrangler_auth:/root/.config/.wrangler
+    command: ["sh", "-lc", "npm ci --no-audit --no-fund && npm run build"]
+
+  site:
+    image: nginx:alpine
+    ports:
+      - "${SITE_PORT:-8080}:80"
+    volumes:
+      - ./dist:/usr/share/nginx/html:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/ || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    profiles: ["quick-tunnel"]
+    command: ["tunnel", "--no-autoupdate", "--url", "http://site:80"]
+    depends_on:
+      site:
+        condition: service_healthy
+
+volumes:
+  node_modules:
+  wrangler_auth:
+    name: onekarlo-com-wrangler-auth
+    external: true

@@ -12,6 +12,8 @@ Read:
 - [ARCHITECTURE.md](ARCHITECTURE.md) for the runtime and delivery model.
 - [docs/LOCAL-DEVELOPMENT.md](docs/LOCAL-DEVELOPMENT.md) for the sandbox
   workflow.
+- [docs/CLOUDFLARE-WORKERS.md](docs/CLOUDFLARE-WORKERS.md) before changing
+  Worker deployment behavior.
 - [docs/CONTENT-GUIDE.md](docs/CONTENT-GUIDE.md) before editing public project
   copy.
 
@@ -57,11 +59,11 @@ visible focus styles, reduced-motion behavior, readable contrast, and the
 absence of browser-console errors. `vite preview` is a verification server,
 not a production server.
 
-When documentation or shell scripts change, also run:
+When documentation or deployment configuration changes, also run:
 
 ```bash
+docker compose config
 git diff --check
-bash -n deploy.sh
 ```
 
 Use [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for deployment-specific checks.
@@ -92,7 +94,7 @@ Project entries should communicate:
 Use generic descriptions. The public site is a portfolio, not a client case
 study or infrastructure inventory.
 
-## GitHub HTTPS and signed-commit workflow
+## GitHub HTTPS workflow
 
 Local commits use Git. GitHub authentication and the Git credential helper use
 the official `gh` CLI over HTTPS:
@@ -105,20 +107,19 @@ git remote get-url origin
 ```
 
 Confirm `origin` begins with `https://github.com/` before any push. Create a
-focused signed local commit, then push the current branch through that
-authenticated HTTPS helper:
+focused local commit, then push the current branch through that authenticated
+HTTPS helper:
 
 ```bash
 git add path/to/changed-files
-git commit -S -m "docs: update project and deployment guides"
+git commit -m "docs: update project and deployment guides"
 git push origin HEAD
-git log -1 --format='%h %G? %GS %s'
 ```
 
-The signature status must be `G` (good). If local signing is not configured,
-stop and configure a GitHub-supported GPG, SSH, or S/MIME signing method
-before committing. Do not put tokens, private URLs, server addresses, or
-generated output in a commit. Use
+HTTPS authentication is not a commit signature. If a working GPG, SSH, or
+S/MIME signer is configured, use `git commit -S` and verify it separately.
+Do not put tokens, private URLs, server addresses, or generated output in a
+commit. Use
 [docs/RELEASE-CHECKLIST.md](docs/RELEASE-CHECKLIST.md) for the complete release
 sequence.
 

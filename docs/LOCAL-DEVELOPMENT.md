@@ -1,7 +1,7 @@
 # Local development guide
 
-The macOS host is the control plane for source edits, Git, `gh`, SSH, and
-deployment commands. Project execution runs in the repository's deterministic
+The macOS host is the control plane for source edits, Git, `gh`, and deployment
+commands. Project execution runs in the repository's deterministic
 Docker Sandbox so Node.js, npm, Vite, TypeScript, and preview processes do not
 depend on host-installed runtimes.
 
@@ -54,9 +54,8 @@ jk-sbx-project publish 3000
 ```
 
 Use either the dev server or the preview server at a time. Vite's preview
-server is for local verification, not production hosting. The production
-deployment script runs the same lockfile install and production build in this
-sandbox before synchronizing `dist/` to the VPS.
+server is for local verification, not production hosting. Cloudflare Workers
+deploys this same `dist/` directory; see [CLOUDFLARE-WORKERS.md](CLOUDFLARE-WORKERS.md).
 
 ## Compound commands and lifecycle
 
@@ -83,7 +82,6 @@ Before committing a change, run:
 
 ```bash
 jk-sbx-project exec npm run build
-bash -n deploy.sh
 git diff --check
 ```
 
@@ -98,5 +96,6 @@ console.
 - [npm ci](https://docs.npmjs.com/cli/v11/commands/npm-ci/)
 - [Vite static deployment guide](https://vite.dev/guide/static-deploy.html)
 - [Contributing guide](../CONTRIBUTING.md)
-- [Deployment runbook](DEPLOYMENT.md)
+- [Cloudflare Workers deployment](CLOUDFLARE-WORKERS.md)
+- [Legacy VPS Caddy deployment runbook](DEPLOYMENT.md)
 - [Release checklist](RELEASE-CHECKLIST.md)

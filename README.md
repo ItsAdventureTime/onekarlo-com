@@ -3,7 +3,7 @@
 [![Docker Sandbox](https://img.shields.io/badge/Local%20Build-Docker%20Sandbox-2496ED.svg)](https://docs.docker.com/ai/sandboxes/)
 [![Vite](https://img.shields.io/badge/Vite-6.4.3-646CFF.svg)](https://vite.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9.3-3178C6.svg)](https://www.typescriptlang.org)
-[![Caddy](https://img.shields.io/badge/VPS-Caddy-1F88C0.svg)](https://caddyserver.com/)
+[![Cloudflare Workers](https://img.shields.io/badge/Deploy-Cloudflare%20Workers-F38020.svg)](https://developers.cloudflare.com/workers/)
 
 This repository contains the source for a personal engineering portfolio. It
 uses a small static frontend to explain active projects, systems work, and the
@@ -25,7 +25,7 @@ clients, companies, locations, hosts, or private infrastructure.
 - Memory-safe client lifecycles with guarded `requestAnimationFrame` and event cleanup.
 - A lightweight HTML, TypeScript, and CSS application with no frontend
   framework runtime.
-- A sandboxed build and a guarded Caddy deployment path for static output.
+- A sandboxed build and Cloudflare Workers Static Assets deployment path.
 
 ## Stack
 
@@ -35,7 +35,7 @@ clients, companies, locations, hosts, or private infrastructure.
 | Runtime | Native browser APIs and ES modules |
 | Build | Docker Sandbox, npm lockfile, Vite production build |
 | Local execution | Docker Sandbox via `jk-sbx-project` |
-| Delivery | SSH/rsync, rootless Caddy, systemd Quadlet references |
+| Delivery | Cloudflare Workers Static Assets |
 
 ## Repository map
 
@@ -48,7 +48,13 @@ clients, companies, locations, hosts, or private infrastructure.
 | `public/` | Static assets and fallback pages |
 | `quadlet/` | Sanitized Caddy and Quadlet reference fragments |
 | `docs/` | Content, deployment, and release guides |
-| `deploy.sh` | Build, preflight, sync, and Caddy reload script |
+| `wrangler.jsonc` | Cloudflare Workers Static Assets configuration |
+| `scripts/wrangler.sh` | Wrangler launcher with a writable npm prefix |
+| `deploy.sh` | Legacy VPS Caddy deployment script |
+
+The optional `compose.yaml` provides an Alpine build container and local Nginx
+demo. Its `node_modules` named volume is generated state; use
+`docker compose down -v` when recovering from an incomplete dependency install.
 
 ## Local development
 
@@ -56,8 +62,7 @@ Prerequisites:
 
 - Docker Desktop (or a compatible Docker Engine).
 - The `jk-sbx-project` command-line wrapper.
-- `rsync` and `ssh` when using the production deployment script; Podman remains
-  a VPS-side Caddy prerequisite.
+- `rsync` and `ssh` only when using the legacy VPS Caddy deployment script.
 
 The repository's local execution plane is a deterministic Docker Sandbox. From
 the project root:
@@ -74,7 +79,7 @@ Open `http://localhost:3000`. The development server supports live reload.
 Run a host-independent production build in the sandbox:
 
 ```bash
-jk-sbx-project exec npm run build
+docker compose run --rm build
 ```
 
 For a local production preview, stop the dev server first, then run:
@@ -91,46 +96,25 @@ sandbox workflow.
 
 ## Deployment
 
-`deploy.sh` is configured for the production VPS in this repository. Run it
-directly from the project root:
+Deploy the Vite output to Cloudflare Workers Static Assets:
 
 ```bash
-./deploy.sh
+jk-sbx-project exec npm run build
+docker compose run --rm build npm run verify:workers
+docker compose run --rm build npm run preview:workers
+docker compose run --rm build npm run deploy:workers
 ```
 
-If a checkout has lost the executable bit, use `bash ./deploy.sh` once and
-restore the mode before committing with `chmod +x deploy.sh`.
+Authenticate once with the container-safe device flow:
 
-The script expects the existing rootless Caddy service to use:
+```bash
+docker compose run --rm build \
+  ./node_modules/.bin/wrangler login --device
+```
 
-- `/home/jk/caddy/conf/Caddyfile` on the VPS;
-- `/home/jk/.config/containers/systemd/caddy/caddy.container`;
-- `/home/jk/onekarlo-com` as the host-side web root.
-
-The script:
-
-1. Builds locally inside the initialized Docker Sandbox.
-2. Validates rsync, SSH, and the fixed VPS paths.
-3. Verifies the Caddy container is running and maps `/srv/onekarlo-com` to
-`/home/jk/onekarlo-com`.
-4. Validates the active Caddyfile before changing public files.
-5. Synchronizes generated files while preserving site-owned state and replacing
-   versioned assets without stale files.
-6. Reloads the already-validated Caddy configuration through the VPS's
-   rootless Podman-managed Caddy container.
-
-The deployment workstation does not need Podman; only the VPS-side Caddy
-service uses it for validation and reload.
-
-It does not install Quadlets, replace a complete Caddyfile, or create missing
-production directories. Read [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) before
-changing the fixed target.
-
-The files under `quadlet/` are sanitized reference fragments. Podman Quadlets
-are declarative systemd units; review the [Podman Quadlet
-documentation](https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html)
-and merge references into the operator's complete unit rather than replacing
-an existing multi-service configuration.
+Read [the Workers deployment guide](docs/CLOUDFLARE-WORKERS.md) for the
+one-time login, preview verification, custom-domain cutover, and CI setup.
+The existing VPS Caddy files remain available only for an intentional rollback.
 
 ## Content and privacy
 
@@ -139,9 +123,10 @@ Projects & Systems section. Keep public entries capability-focused and remove
 client names, company names, geographic locations, IP addresses, usernames,
 filesystem paths, credentials, and identifying project metadata.
 
-## GitHub HTTPS and signed-commit workflow
+## GitHub HTTPS workflow
 
-GitHub authentication and Git credential setup use the official GitHub CLI:
+GitHub authentication and Git credential setup use the official GitHub CLI over
+HTTPS:
 
 ```bash
 gh auth status --hostname github.com
@@ -152,11 +137,11 @@ git remote get-url origin
 
 The `origin` URL must use `https://github.com/...`, never SSH. Local commits
 remain local Git operations; authenticated HTTPS transport is provided by
-`gh auth setup-git`. `gh` does not sign a local commit for you, so keep Git
-commit signing enabled and verify the resulting signature before pushing. See
-the [GitHub commit-signing guide](https://docs.github.com/en/authentication/managing-commit-signature-verification/signing-commits)
-and [docs/RELEASE-CHECKLIST.md](docs/RELEASE-CHECKLIST.md) for the complete
-review, commit, and push sequence.
+`gh auth setup-git`. HTTPS authentication does not create a cryptographic
+commit signature. Use `git commit -S` only when a working GPG, SSH, or S/MIME
+signer is configured; otherwise use a normal local commit and do not describe
+it as signed. See [docs/RELEASE-CHECKLIST.md](docs/RELEASE-CHECKLIST.md) for
+the complete review, commit, and push sequence.
 
 ## Further reading
 
