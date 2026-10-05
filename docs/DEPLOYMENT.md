@@ -1,7 +1,10 @@
 # Legacy VPS Caddy deployment runbook
 
-Cloudflare Workers is the production deployment path. This runbook is retained
-only as a rollback procedure for the former VPS Caddy target. Its command is:
+Cloudflare Workers Static Assets serving the custom domain `https://onekarlo.com`
+is the production deployment path. It is not hosted on Vercel. The default
+`workers.dev` URL (`https://onekarlo-com.jk-s-account.workers.dev`) is not
+accessible to the public. This runbook is retained only as a legacy rollback
+procedure for the former VPS Caddy target. Its command is:
 
 ```bash
 ./deploy.sh

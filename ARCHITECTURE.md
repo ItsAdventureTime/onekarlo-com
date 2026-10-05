@@ -27,17 +27,19 @@ The project separates control, local execution, and production delivery:
 | --- | --- |
 | macOS control plane | Source edits, Git, `gh`, SSH, and deployment orchestration |
 | Docker Sandbox | Local npm, TypeScript, Vite build, preview, and UI verification |
-| Cloudflare production plane | Workers Static Assets, edge cache, and static files |
+| Cloudflare production plane | Workers Static Assets serving `https://onekarlo.com` at the edge |
 
 Use `jk-sbx-project exec` for local project commands. Production deployment
-uploads the built static directory through Wrangler; the Mac mini is not a
-public request origin.
+uploads the built static directory to Cloudflare Workers Static Assets; the
+public endpoint is the custom domain `https://onekarlo.com` (not a Vercel
+app). The default Worker address (`https://onekarlo-com.jk-s-account.workers.dev`)
+is not accessible to the public (`workers_dev: false`).
 
 ## Runtime flow
 
 ```text
 [ Browser ]
-    │ HTTPS
+    │ HTTPS (https://onekarlo.com)
     ▼
 [ Cloudflare Workers Static Assets ]
     │ static request
@@ -49,8 +51,8 @@ public request origin.
     └── public fallback files
 ```
 
-Cloudflare serves the generated static directory. The site has no server-side
-application, runtime database, or API dependency in the browser.
+Cloudflare serves the generated static directory at the edge. The site has no
+server-side application, runtime database, or API dependency in the browser.
 
 ## Frontend modules
 

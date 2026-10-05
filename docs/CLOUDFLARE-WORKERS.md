@@ -1,12 +1,30 @@
 # Cloudflare Workers deployment
 
-The production site is a Cloudflare Workers Static Assets deployment. It has no
-Worker script, server, container, database, or Cloudflare Tunnel dependency:
-Workers serves the Vite `dist/` directory directly from Cloudflare's edge.
+The production site is deployed as a Cloudflare Workers Static Assets project.
+The public production URL is the custom domain `https://onekarlo.com`.
+
+This is a Cloudflare Workers deployment and is not hosted on Vercel. The
+original worker address is `https://onekarlo-com.jk-s-account.workers.dev`, but
+public access to that default `workers.dev` subdomain is disabled (`workers_dev: false`
+in `wrangler.jsonc`). Public traffic resolves exclusively through the custom
+domain `https://onekarlo.com`.
+
+Workers serves the Vite `dist/` directory directly from Cloudflare's edge with
+zero runtime server or container dependency.
+
+## Domain architecture
+
+| Endpoint | Type | Access |
+| --- | --- | --- |
+| `https://onekarlo.com` | Custom domain | Public production |
+| `https://onekarlo-com.jk-s-account.workers.dev` | Default Worker URL | Disabled / Not accessible in public |
+
+The repository configures `"workers_dev": false` in `wrangler.jsonc` so that
+deployments preserve the custom domain as the only public entry point.
 
 ## One-time setup
 
-1. In the Cloudflare dashboard, enable your account's `workers.dev` subdomain.
+1. In the Cloudflare dashboard, ensure your zone uses Cloudflare nameservers.
 2. From the repository root, prepare the Docker Compose volumes:
 
    ```bash
@@ -35,30 +53,22 @@ Workers serves the Vite `dist/` directory directly from Cloudflare's edge.
    docker compose run --rm build npm run deploy:workers
    ```
 
-5. Open the returned `workers.dev` URL. Verify the home page, an unknown path
-   returns the custom `404.html`, the browser console is clean, and the
-   response includes the headers in `public/_headers`.
+5. Verify the home page at `https://onekarlo.com`, confirm an unknown path
+   returns the custom `404.html`, verify the browser console is clean, and
+   check that responses include the headers declared in `public/_headers`.
 
-The verified release sequence is therefore: `build` → `verify:workers` →
-`preview:workers` → `deploy:workers`. The preview upload creates a version
-without sending traffic to it; `deploy:workers` promotes the built assets to
-production.
+The release sequence is: `build` -> `verify:workers` -> `preview:workers` -> `deploy:workers`.
+The preview upload creates a version without sending live traffic;
+`deploy:workers` promotes the built assets to production on `https://onekarlo.com`.
 
-This sequence was verified end to end on 2026-08-31 with Wrangler 4.127.1:
-the build and artifact checks passed, a `staging` preview version was uploaded,
-and the production Worker deployed successfully. Keep the preview and
-production commands separate; only `deploy:workers` sends traffic live.
+## Custom domain configuration
 
-## Custom domain cutover
-
-After the `workers.dev` verification passes, add `onekarlo.com` as a custom
-domain in the Worker settings. The zone must use Cloudflare nameservers. Keep
-the existing Caddy deployment live until the custom-domain URL has been
-verified, then remove only the old site route when the cutover is approved.
+`onekarlo.com` is configured as a Custom Domain in the Worker settings
+(Settings > Domains & Routes). Keep `workers_dev: false` in `wrangler.jsonc` so
+the default `*.workers.dev` subdomain remains closed to the public.
 
 Do not put `routes` in `wrangler.jsonc`: the exact zone and hostname are an
-account-level decision and are safer to attach in the dashboard during the
-cutover.
+account-level decision managed in the Cloudflare dashboard.
 
 ## Ongoing deployment
 

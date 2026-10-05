@@ -35,7 +35,12 @@ clients, companies, locations, hosts, or private infrastructure.
 | Runtime | Native browser APIs and ES modules |
 | Build | Docker Sandbox, npm lockfile, Vite production build |
 | Local execution | Docker Sandbox via `jk-sbx-project` |
-| Delivery | Cloudflare Workers Static Assets |
+| Delivery | Cloudflare Workers Static Assets (`https://onekarlo.com`) |
+
+The production site is hosted on Cloudflare Workers Static Assets at the custom
+domain `https://onekarlo.com`. It is not a Vercel application. The default
+`workers.dev` endpoint (`https://onekarlo-com.jk-s-account.workers.dev`) is not
+accessible to the public (`workers_dev: false`).
 
 ## Repository map
 

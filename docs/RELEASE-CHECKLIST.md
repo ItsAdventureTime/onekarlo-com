@@ -111,9 +111,11 @@ docker compose run --rm build npm run preview:workers
 docker compose run --rm build npm run deploy:workers
 ~~~
 
-Verify the returned `workers.dev` URL before attaching or changing the custom
-domain. Follow [CLOUDFLARE-WORKERS.md](CLOUDFLARE-WORKERS.md) for authentication,
-custom-domain cutover, and recovery steps. This does not change the GitHub HTTPS
+Verify the deployment at the custom domain `https://onekarlo.com`. The default
+`workers.dev` URL (`https://onekarlo-com.jk-s-account.workers.dev`) is not
+accessible to the public (`workers_dev: false`). Follow
+[CLOUDFLARE-WORKERS.md](CLOUDFLARE-WORKERS.md) for authentication, domain
+routing, and recovery steps. This does not change the GitHub HTTPS
 requirement.
 
 ## 7. Post-release record
