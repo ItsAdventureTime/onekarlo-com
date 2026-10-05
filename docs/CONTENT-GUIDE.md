@@ -117,7 +117,7 @@ Before committing content:
 - [ ] Metrics are signals, not identifying operational data.
 - [ ] Tags and technical details do not reveal private infrastructure.
 - [ ] The page still works with keyboard navigation and reduced motion.
-- [ ] Production build passes in Podman.
+- [ ] Production build passes in Docker Sandbox.
 
 If a detail is useful only because it proves identity, remove it. Clarity is
 more valuable than unnecessary specificity.

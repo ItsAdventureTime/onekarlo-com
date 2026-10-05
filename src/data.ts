@@ -44,8 +44,8 @@ export const PROFILE_DATA = {
   title: 'Full-stack product engineer',
   linkedin: 'https://www.linkedin.com/in/juan-karlo-de-guzman-51b79517/',
   github: 'https://github.com/ItsAdventureTime',
-  email: 'jk@onekarlo.com',
-  bio: `I build and run workflow software, Linux container platforms, and self-hosted AI services. For the past several years, I've worked across the full delivery cycle: mapping workflows, designing backends and audit trails, deploying rootless Podman services on Fedora CoreOS, and keeping production systems reliable.`
+  email: 'work@onekarlo.com',
+  bio: `I build and run workflow software, internal tools, and self-hosted services. Over the years, my infrastructure evolved from VPS nodes in Singapore and the United States to a dedicated Mac mini M1 homelab. Today I run container workloads with OrbStack and route edge traffic through Cloudflare Tunnels and Workers. I work across the full delivery cycle, from mapping business processes and writing backend APIs to keeping systems stable, responsive, and low maintenance.`
 };
 
 export const PHILOSOPHY_STEPS: PhilosophyStep[] = [
@@ -53,50 +53,50 @@ export const PHILOSOPHY_STEPS: PhilosophyStep[] = [
     stepNum: 1,
     phase: 'Provision',
     title: 'Deploy and isolate',
-    desc: 'Set up clean, repeatable environments with declarative rootless Podman Quadlets on an immutable host.'
+    desc: 'Set up clean, repeatable environments with Docker Compose and container definitions running in OrbStack on a local host.'
   },
   {
     stepNum: 2,
     phase: 'Stress',
     title: 'Test boundaries',
-    desc: 'Load-test edge cases, send malformed input, and check SELinux under concurrent load.'
+    desc: 'Load-test edge cases, send malformed input, and verify error boundaries under concurrent load.'
   },
   {
     stepNum: 3,
     phase: 'Telemetry',
     title: 'Read the signals',
-    desc: 'Read systemd journal logs, container output, and HTTP headers to see what the system is doing.'
+    desc: 'Read container logs, network traces, and HTTP headers to see what the system is doing in real time.'
   },
   {
     stepNum: 4,
     phase: 'Analysis',
     title: 'Find the root cause',
-    desc: 'Trace failures through networking, database locks, and memory instead of hiding them with a workaround.'
+    desc: 'Trace failures through networking, database locks, and memory instead of hiding them behind workarounds.'
   },
   {
     stepNum: 5,
     phase: 'Security',
     title: 'Fix and harden',
-    desc: 'Make structural fixes, close unused ports, mount volumes read-only, and keep an audit trail.'
+    desc: 'Make structural fixes, isolate network routes, mount storage read-only where possible, and keep an audit trail.'
   },
   {
     stepNum: 6,
     phase: 'Lifecycle',
     title: 'Document and verify',
-    desc: 'Write runbooks, add health checks, and verify the system after launch.'
+    desc: 'Write runbooks, add automated health checks, and verify service recovery after deployment.'
   }
 ];
 
 export const TOPOLOGY_NODES: TopoNode[] = [
   {
     id: 'cdn',
-    name: 'Anycast CDN',
-    subtitle: 'Global edge network and DDoS protection',
+    name: 'Cloudflare Edge',
+    subtitle: 'Global Anycast network and edge security',
     iconSvg: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`,
     status: 'Edge active',
     statusType: 'online',
-    details: 'The CDN handles public HTTPS requests across a global Anycast network. It applies DDoS mitigation, edge caching, and Brotli/Zstd compression before requests reach the origin.',
-    specs: ['Global Anycast routing', 'TLS 1.3 and HTTP/3 termination', 'Brotli and Zstd compression', 'DDoS rate limiting and origin shielding'],
+    details: 'Cloudflare handles public HTTPS traffic at the edge across an Anycast network. It inspects incoming requests, applies rate limiting and SSL termination, and routes authorized traffic through secure tunnels.',
+    specs: ['Global Anycast edge routing', 'TLS 1.3 and HTTP/3 termination', 'Automated DDoS mitigation', 'Origin shielding with zero public inbound ports'],
     configSnippetTitle: 'Edge routing policy',
     configSnippet: `zone "onekarlo.com" {
   origin_shield = true
@@ -107,93 +107,85 @@ export const TOPOLOGY_NODES: TopoNode[] = [
 }`
   },
   {
-    id: 'caddy',
-    name: 'Caddy Server',
-    subtitle: 'Reverse proxy and automatic TLS',
-    iconSvg: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>`,
-    status: 'Quadlet service',
+    id: 'tunnel',
+    name: 'Cloudflare Tunnel',
+    subtitle: 'Encrypted inbound connection via cloudflared',
+    iconSvg: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path><path d="M12 12v9"></path><path d="m8 17 4 4 4-4"></path></svg>`,
+    status: 'Tunnel connected',
     statusType: 'systemd',
-    details: 'Caddy is an extensible web server with a clear configuration format and automatic certificate management. It runs unprivileged in a rootless Podman container managed by user-level systemd.',
-    specs: ['Rootless Podman service', 'Automatic Let\'s Encrypt or ZeroSSL TLS', 'Strict content security policy (CSP)', 'Immutable cache headers for static assets'],
-    configSnippetTitle: 'quadlet/Caddyfile',
-    configSnippet: `onekarlo.com {
-  root * /srv/onekarlo-com
-  encode zstd gzip
-  file_server
+    details: 'A persistent, outbound-only tunnel daemon (cloudflared) connects the local homelab to Cloudflare edge infrastructure. No public IP address or forwarded router ports are exposed to the public internet.',
+    specs: ['Outbound-only encrypted TLS connections', 'Zero open router ports or static public IP required', 'Automatic failover and session multiplexing', 'Local ingress routing to OrbStack services'],
+    configSnippetTitle: '~/.cloudflared/config.yml',
+    configSnippet: `tunnel: homelab-mini
+credentials-file: /etc/cloudflared/credentials.json
 
-  header {
-    Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-    X-Content-Type-Options "nosniff"
-    X-Frame-Options "DENY"
-    Content-Security-Policy "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';"
-  }
+ingress:
+  - hostname: onekarlo.com
+    service: http://127.0.0.1:3000
+  - hostname: lab.onekarlo.com
+    service: http://127.0.0.1:8080
+  - service: http_status:404`
+  },
+  {
+    id: 'homelab',
+    name: 'Mac mini M1 Homelab',
+    subtitle: 'Energy-efficient Apple Silicon host',
+    iconSvg: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>`,
+    status: 'Host online',
+    statusType: 'immutable',
+    details: 'A dedicated Apple Silicon M1 machine serves as the central hardware node. It provides low power draw, silent operation, unified memory architecture, and sustained local compute for containers and demo environments.',
+    specs: ['Apple M1 8-core CPU and 16GB unified memory', 'Under 10W idle power consumption', 'Local NVMe storage with automated remote backup snapshots', 'Protected behind hardware firewall and private subnet'],
+    configSnippetTitle: 'host-telemetry.json',
+    configSnippet: `{
+  "hardware": "Mac mini (M1, 2020)",
+  "memory": "16 GB unified",
+  "storage": "APFS encrypted internal NVMe",
+  "power_idle_watts": 6.8,
+  "role": "Homelab core server",
+  "uptime": "99.9% local target"
 }`
   },
   {
-    id: 'coreos',
-    name: 'Fedora CoreOS',
-    subtitle: 'Immutable Linux host',
-    iconSvg: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>`,
-    status: 'Atomic and enforcing',
-    statusType: 'immutable',
-    details: 'Fedora CoreOS is an immutable, container-focused Linux distribution. It applies OS upgrades atomically through rpm-ostree and protects the host with SELinux in enforcing mode.',
-    specs: ['Atomic rpm-ostree updates', 'SELinux mandatory access control in enforcing mode', 'Declarative Ignition provisioning', 'Systemd user lingering for service persistence'],
-    configSnippetTitle: 'rpm-ostree deployment state',
-    configSnippet: `● fedora:fedora/x86_64/coreos/stable
-         Version: 40.2026.3.0 (2026-07-21T03:14:02Z)
-      BaseCommit: a3f890c21e7ce734076a0b1a37f8a97c875c07037c
-          GPGPub: Fedora (40) <fedora-40-primary@fedoraproject.org>
-          OSTree: atomic deployment (read-only /usr)
-         SELinux: Enforcing (Targeted mode)`
-  },
-  {
-    id: 'quadlets',
-    name: 'Podman Quadlets',
-    subtitle: 'Rootless systemd services',
+    id: 'orbstack',
+    name: 'OrbStack Docker',
+    subtitle: 'Fast container runtime for macOS',
     iconSvg: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>`,
-    status: 'Active systemd services',
-    statusType: 'systemd',
-    details: 'Podman Quadlets translate declarative .container and .volume files into native systemd user services. This keeps service definitions inspectable while enforcing unprivileged user namespaces.',
-    specs: ['Declarative .container and .volume units', 'Rootless user namespaces and UID mapping', 'Native systemctl and journalctl lifecycle hooks', 'SELinux :Z volume labeling'],
-    configSnippetTitle: '~/.config/containers/systemd/caddy/caddy.container',
-    configSnippet: `[Unit]
-Description=Caddy rootless edge web server
-After=network-online.target
-
-[Container]
-ContainerName=caddy
-Image=docker.io/library/caddy:alpine
-PublishPort=80:80/tcp
-PublishPort=443:443/tcp
-Volume=/home/jk/onekarlo-com:/srv/onekarlo-com:ro,Z
-Volume=/home/jk/caddy/conf:/etc/caddy:ro,Z
-LogDriver=journald
-
-[Service]
-Restart=always
-TimeoutStartSec=300
-
-[Install]
-WantedBy=default.target`
+    status: 'Engine running',
+    statusType: 'active',
+    details: 'OrbStack provides a lightweight, native Linux container engine on macOS. It starts containers in milliseconds, consumes minimal background memory, and integrates directly with Docker Compose workflows.',
+    specs: ['Docker CLI and Docker Compose compatibility', 'Instant container startup with low memory footprint', 'Two-way macOS filesystem binding at native speed', 'Isolated virtual networking per project stack'],
+    configSnippetTitle: 'docker-compose.yml',
+    configSnippet: `services:
+  gateway:
+    image: caddy:alpine
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:80"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+  api:
+    build: .
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production`
   },
   {
-    id: 'vllm',
-    name: 'AI Model Engine',
-    subtitle: 'PyTorch, vLLM, and Go routing',
+    id: 'workloads',
+    name: 'Self-Hosted Services',
+    subtitle: 'Containerized apps and evaluation models',
     iconSvg: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a8 8 0 0 0-8 8c0 3.36 2.07 6.24 5 7.42V20a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-2.58c2.93-1.18 5-4.06 5-7.42a8 8 0 0 0-8-8z"></path><line x1="10" y1="14" x2="14" y2="14"></line></svg>`,
-    status: 'GPU node online',
-    statusType: 'active',
-    details: 'A self-hosted model-serving platform on cloud GPU instances. It uses vLLM for continuous batching and a Go proxy for side-by-side, multi-model evaluation.',
-    specs: ['vLLM PagedAttention engine', 'Go proxy and request router', 'Side-by-side model evaluation UI', 'Dynamic routing across hosted and self-hosted models'],
-    configSnippetTitle: 'bifrost-router.json',
+    status: 'Services healthy',
+    statusType: 'online',
+    details: 'Internal and demonstration workloads run inside dedicated Compose project boundaries. Services include web application backends, lightweight inference evaluation proxies, automated sync routines, and local telemetry.',
+    specs: ['Dedicated private Docker networks', 'Isolated persistent volumes for databases', 'Environment variables managed via secure local keychains', 'Prometheus metrics and local health probes'],
+    configSnippetTitle: 'service-stack.json',
     configSnippet: `{
-  "listen": "0.0.0.0:8080",
-  "backends": [
-    { "name": "vllm-local", "url": "http://127.0.0.1:8000/v1", "weight": 100 },
-    { "name": "openrouter-fallback", "url": "https://openrouter.ai/api/v1", "weight": 0 }
+  "active_stacks": [
+    { "name": "internal-tools", "containers": 3, "status": "running" },
+    { "name": "model-gateway", "containers": 2, "status": "running" },
+    { "name": "demo-storefront", "containers": 1, "status": "running" }
   ],
-  "streaming": true,
-  "telemetry": "prometheus"
+  "monitoring": "local-health-check"
 }`
   }
 ];
@@ -428,6 +420,35 @@ export const PROJECTS_DATA: ProjectItem[] = [
         { label: 'Application', items: ['React', 'TypeScript', 'Role-aware workflows'] },
         { label: 'Financial model', items: ['Budget controls', 'Progress claims', 'Collections'] },
         { label: 'Data exchange', items: ['CSV', 'Excel-ready files', 'JSON interchange'] }
+      ]
+    }
+  },
+  {
+    id: 'p9',
+    title: 'Storefront and inventory management platform',
+    category: 'biz',
+    categoryLabel: 'Workflow product',
+    description: 'A full-stack ecommerce and administrative management system built for an Information Systems demonstration, featuring a customer catalog, voucher promotions, and real-time stock control.',
+    tags: ['React', 'TypeScript', 'Vite', 'Hono', 'Cloudflare Workers', 'Cloudflare D1', 'SQLite', 'Admin workflows'],
+    metrics: [
+      '100 seeded catalog products with category filters',
+      'Simulated multi-channel checkout and instant order tracking',
+      'Comprehensive back-office inventory and demo reset controls'
+    ],
+    caseStudy: {
+      overview: 'A full-stack ecommerce storefront and back-office operations suite designed as a realistic educational demonstration for an Information Systems curriculum.',
+      challenge: 'Coursework demonstrations often rely on static mockups or disconnected toy databases that fail to show how customer cart actions, voucher discounts, and warehouse inventory interact under real business rules.',
+      solution: 'Built a cohesive single-page application and edge API architecture using React, Hono, and Cloudflare D1. The system gives shoppers an authentic checkout experience while providing administrators full visibility over inventory adjustments, campaign promotions, and order status transitions.',
+      architectureHighlights: [
+        'Edge-native API built with Hono and deployed to Cloudflare Workers with embedded D1 SQLite storage',
+        'Dual-role interface separating customer storefront browsing from administrative catalog controls',
+        'Atomic inventory deductions during checkout with rollback protection and instant stock replenishment',
+        'Isolated demo reset mechanism allowing instructors and students to restore catalog and order data cleanly'
+      ],
+      techStack: [
+        { label: 'Client application', items: ['React', 'TypeScript', 'Vite', 'Responsive CSS'] },
+        { label: 'Edge backend', items: ['Hono framework', 'Cloudflare Workers', 'Cloudflare D1 (SQLite)', 'Role-based routing'] },
+        { label: 'Operations & data', items: ['Deterministic SQL migrations', 'Simulated payment flows', 'Automated test suite'] }
       ]
     }
   }

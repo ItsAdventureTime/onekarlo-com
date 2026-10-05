@@ -78,17 +78,17 @@ export class TerminalEmulator {
               <span class="tab-icon" aria-hidden="true">$</span>
               <span>bash</span>
             </button>
-            <button class="terminal-tab" id="terminal-tab-systemctl" role="tab" aria-selected="false" aria-controls="terminal-panel" tabindex="-1" data-tab="systemctl">
-              <span class="tab-icon" aria-hidden="true">&gt;</span>
-              <span>systemctl</span>
-            </button>
-            <button class="terminal-tab" id="terminal-tab-quadlet" role="tab" aria-selected="false" aria-controls="terminal-panel" tabindex="-1" data-tab="quadlet">
+            <button class="terminal-tab" id="terminal-tab-docker" role="tab" aria-selected="false" aria-controls="terminal-panel" tabindex="-1" data-tab="docker">
               <span class="tab-icon" aria-hidden="true">[]</span>
-              <span>caddy.container</span>
+              <span>docker ps</span>
             </button>
-            <button class="terminal-tab" id="terminal-tab-ostree" role="tab" aria-selected="false" aria-controls="terminal-panel" tabindex="-1" data-tab="ostree">
+            <button class="terminal-tab" id="terminal-tab-tunnel" role="tab" aria-selected="false" aria-controls="terminal-panel" tabindex="-1" data-tab="tunnel">
+              <span class="tab-icon" aria-hidden="true">&gt;</span>
+              <span>tunnel</span>
+            </button>
+            <button class="terminal-tab" id="terminal-tab-system" role="tab" aria-selected="false" aria-controls="terminal-panel" tabindex="-1" data-tab="system">
               <span class="tab-icon" aria-hidden="true">#</span>
-              <span>rpm-ostree</span>
+              <span>homelab</span>
             </button>
           </div>
 
@@ -109,9 +109,9 @@ export class TerminalEmulator {
         <!-- Quick Execution Chips -->
         <div class="terminal-chips" aria-label="Command shortcuts">
           <button class="chip-btn" data-cmd="help">help</button>
+          <button class="chip-btn" data-cmd="docker ps">docker ps</button>
+          <button class="chip-btn" data-cmd="tunnel">tunnel</button>
           <button class="chip-btn" data-cmd="status">status</button>
-          <button class="chip-btn" data-cmd="rpm-ostree status">rpm-ostree</button>
-          <button class="chip-btn" data-cmd="quadlet">quadlet</button>
           <button class="chip-btn" data-cmd="cat bio.md">cat bio.md</button>
           <button class="chip-btn" data-cmd="skills">skills</button>
           <button class="chip-btn" data-cmd="architecture">architecture</button>
@@ -267,15 +267,15 @@ export class TerminalEmulator {
     if (tabKey === 'bash') {
       this.bodyEl.innerHTML = '';
       this.printWelcome();
-    } else if (tabKey === 'systemctl') {
+    } else if (tabKey === 'docker') {
+      this.bodyEl.innerHTML = '';
+      this.executeCommand('docker ps');
+    } else if (tabKey === 'tunnel') {
+      this.bodyEl.innerHTML = '';
+      this.executeCommand('tunnel');
+    } else if (tabKey === 'system') {
       this.bodyEl.innerHTML = '';
       this.executeCommand('status');
-    } else if (tabKey === 'quadlet') {
-      this.bodyEl.innerHTML = '';
-      this.executeCommand('quadlet');
-    } else if (tabKey === 'ostree') {
-      this.bodyEl.innerHTML = '';
-      this.executeCommand('rpm-ostree status');
     }
   }
 
@@ -309,7 +309,7 @@ export class TerminalEmulator {
   }
 
   private printWelcome() {
-    this.appendLine(`<span class="term-dim">[SYSTEM] Fedora CoreOS 40.2026.3.0 stable (rpm-ostree) | Podman Quadlets active</span>
+    this.appendLine(`<span class="term-dim">[SYSTEM] Mac mini M1 (Apple Silicon) | OrbStack Docker active | Cloudflare Tunnel connected</span>
 <span class="term-dim">Type </span><b class="term-accent">help</b><span class="term-dim"> to see available commands, or use the shortcuts above.</span>`);
   }
 
@@ -322,68 +322,59 @@ export class TerminalEmulator {
     switch (cmd) {
       case 'help':
         this.appendLine(`<span class="term-accent term-heading">Available commands:</span>
-  <b class="term-emerald">help</b>               Show the command index
-  <b class="term-emerald">status</b>             systemctl --user status caddy.service
-  <b class="term-emerald">rpm-ostree status</b>  Inspect immutable Fedora CoreOS deployment
-  <b class="term-emerald">quadlet</b>            View the declarative Podman .container unit
-  <b class="term-emerald">cat bio.md</b>         Read the short bio
-  <b class="term-emerald">skills</b>             List technical strengths
-  <b class="term-emerald">architecture</b>       Inspect the edge-to-hosting pipeline
-  <b class="term-emerald">contact</b>            Connect on LinkedIn and GitHub
-  <b class="term-emerald">clear</b>              Clear terminal buffer`);
+  <b class="term-emerald">help</b>          Show the command index
+  <b class="term-emerald">docker ps</b>     Inspect active OrbStack containers
+  <b class="term-emerald">tunnel</b>        Check Cloudflare Tunnel connection state
+  <b class="term-emerald">status</b>        View Mac mini M1 homelab telemetry
+  <b class="term-emerald">cat bio.md</b>    Read the short bio
+  <b class="term-emerald">skills</b>        List technical strengths
+  <b class="term-emerald">architecture</b>  Inspect the edge-to-homelab pipeline
+  <b class="term-emerald">contact</b>       Connect on LinkedIn and GitHub
+  <b class="term-emerald">clear</b>         Clear terminal buffer`);
+        break;
+
+      case 'docker':
+      case 'docker ps':
+      case 'docker compose ps':
+        this.appendLine(`<span class="term-cyan">CONTAINER ID   IMAGE                    COMMAND                  STATUS         PORTS                    NAMES</span>
+e9b21a48c1f0   caddy:alpine             "caddy run --config…"   Up 3 days      127.0.0.1:3000->80/tcp   homelab-gateway
+8f1c42b90d23   cloudflare/cloudflared   "cloudflared tunnel…"   Up 3 days                               homelab-tunnel
+7a3b819f201d   node:22-alpine           "node dist/index.js"    Up 3 days      127.0.0.1:8080->8080/tcp app-internal-tools`);
+        break;
+
+      case 'tunnel':
+      case 'cloudflared':
+      case 'tunnel status':
+      case 'cloudflared tunnel info':
+        this.appendLine(`<span class="term-cyan">● cloudflared - Cloudflare Tunnel Daemon (outbound TLS)</span>
+   Tunnel Name:  homelab-mini (active)
+   Status:       <b class="term-emerald">HEALTHY (4 active edge connections)</b>
+   Connectors:   sjc01 (San Jose), hkg02 (Hong Kong), nrt01 (Tokyo), sin01 (Singapore)
+   Routes:       onekarlo.com -> http://127.0.0.1:3000
+                 lab.onekarlo.com -> http://127.0.0.1:8080
+   Security:     Zero open router ports | Outbound-only TLS pipe`);
         break;
 
       case 'status':
-      case 'systemctl':
-      case 'systemctl status caddy':
-        this.appendLine(`<span class="term-emerald">● caddy.service - Caddy TLS web server (Podman Quadlet)</span>
-   Loaded: loaded (/home/jk/.config/containers/systemd/caddy/caddy.container; enabled)
-   Active: <b class="term-emerald">active (running)</b> since Tue 2026-07-21 03:14:02; 5d ago
-     Docs: https://caddyserver.com/docs/
- Main PID: 14820 (caddy)
-    Tasks: 8 (limit: 18432)
-   Memory: 24.8M (limit: 16.0G)
-      CPU: 42ms
-   CGroup: /user.slice/user-1000.slice/user@1000.service/app.slice/caddy.service
-           └─14820 /usr/bin/caddy run --config /etc/caddy/Caddyfile --adapter caddyfile`);
+      case 'system':
+      case 'uname':
+      case 'specs':
+        this.appendLine(`<span class="term-emerald">● host-telemetry - Apple Silicon Homelab Node</span>
+   Hardware:   Mac mini (M1, 2020)
+   OS:         macOS Darwin (arm64)
+   Memory:     16 GB unified architecture
+   Storage:    Internal APFS NVMe with encrypted local snapshots
+   Runtime:    OrbStack Linux container virtualization & Docker Compose
+   Power:      Under 10W idle power draw (silent, 24/7 continuous operation)
+   State:      <b class="term-emerald">online (load average: 0.18, 0.22, 0.19)</b>`);
         break;
 
       case 'rpm-ostree status':
       case 'rpm-ostree':
       case 'ostree':
-        this.appendLine(`<span class="term-emerald">State: idle</span>
-Deployments:
-● fedora:fedora/x86_64/coreos/stable
-                  Version: <b class="term-cyan">40.2026.3.0</b> (2026-07-21T03:14:02Z)
-               BaseCommit: a3f890c21e7ce734076a0b1a37f8a97c875c07037c
-                   GPGPub: Fedora (40) &lt;fedora-40-primary@fedoraproject.org&gt;
-                   OSTree: rpm-ostree atomic deployment (read-only /usr)
-                  SELinux: Enforcing (Targeted mode)`);
-        break;
-
       case 'quadlet':
-      case 'cat caddy.container':
-        this.appendLine(`<span class="term-dim"># /home/jk/.config/containers/systemd/caddy/caddy.container</span>
-[Unit]
-Description=Caddy rootless edge web server
-After=network-online.target
-
-[Container]
-ContainerName=caddy
-Image=docker.io/library/caddy:alpine
-PublishPort=80:80/tcp
-PublishPort=443:443/tcp
-PublishPort=443:443/udp
-Volume=/home/jk/onekarlo-com:/srv/onekarlo-com:ro,Z
-Volume=/home/jk/caddy/conf:/etc/caddy:ro,Z
-LogDriver=journald
-
-[Service]
-Restart=always
-TimeoutStartSec=300
-
-[Install]
-WantedBy=default.target`);
+      case 'systemctl':
+        this.appendLine(`<span class="term-dim">[MIGRATION NOTE]</span> Previously hosted on a VPS with Fedora CoreOS Quadlets; now fully migrated to a dedicated Mac mini M1 homelab running OrbStack Docker containers and Cloudflare Tunnels.`);
         break;
 
       case 'cat bio.md':
@@ -401,28 +392,27 @@ ${PROFILE_DATA.bio}`);
       case 'skills':
       case 'skills --all':
         this.appendLine(`<span class="term-cyan">[Product engineering and architecture]</span>
-  Systems:            Logistics audits and financial controls, medical supply inventory, workshop operations
-  Web stack:          React, TypeScript, Vite, Python FastAPI, PostgreSQL, REST APIs
+  Systems:            Storefront and retail operations, logistics audits, financial controls, medical inventory
+  Web stack:          React, TypeScript, Vite, Hono, Python FastAPI, PostgreSQL, SQLite (Cloudflare D1), REST APIs
 
 <span class="term-emerald">[AI infrastructure and model serving]</span>
   Inference:          PyTorch and vLLM for continuous batching and PagedAttention
-  Gateway:             Go API router for model selection and fallback
-  Interface:           Side-by-side model evaluation
-  Compute:             Cloud GPU instances running Ubuntu
+  Gateway:            Go API router for model selection and fallback
+  Evaluation:         Side-by-side model comparison interfaces
 
-<span class="term-amber">[Platform engineering and Linux]</span>
-  Host OS:            Fedora CoreOS with atomic rpm-ostree updates and SELinux
-  Containers:         Rootless Podman Quadlets
-  Edge:               Caddy web server and an Anycast CDN`);
+<span class="term-amber">[Platform engineering and homelab]</span>
+  Homelab host:       Mac mini M1 (Apple Silicon) with low-power continuous operation
+  Containers:         OrbStack native container virtualization and Docker Compose
+  Edge network:       Cloudflare Workers, Anycast CDN, and Cloudflare Tunnels (zero open inbound ports)`);
         break;
 
       case 'architecture':
         this.appendLine(`<span class="term-cyan">[Production routing and security pipeline]</span>
-  Layer 1 (Edge):        Anycast CDN (TLS 1.3, Brotli/Zstd, DDoS filtering)
-  Layer 2 (Web server):  Caddy in rootless Podman (automatic HTTPS, CSP)
-  Layer 3 (Host):        Fedora CoreOS 40 (atomic rpm-ostree, SELinux)
-  Layer 4 (Services):    Native systemd Quadlets (rootless user services)
-  Layer 5 (AI engine):   Cloud GPU nodes (vLLM, PyTorch, Go proxy)`);
+  Layer 1 (Edge):        Cloudflare Edge CDN (TLS 1.3, Brotli/Zstd, DDoS mitigation)
+  Layer 2 (Tunnel):      Cloudflare Tunnel (cloudflared outbound-only encrypted pipe)
+  Layer 3 (Hardware):    Mac mini M1 Homelab (Apple Silicon, low power, quiet local compute)
+  Layer 4 (Container):   OrbStack Docker engine (fast, lightweight Linux containers)
+  Layer 5 (Services):    Self-hosted application backends and model gateways`);
         break;
 
       case 'contact':
